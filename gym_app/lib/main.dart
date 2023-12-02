@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         // the command line to start the app).
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Gym App'),
     );
   }
 }
@@ -104,9 +104,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'Workouts shown here',
+            ConstrainedBox(
+              constraints: BoxConstraints.expand(height: 200, width: 1000),
+              child: const Card(
+                child: const Text('Workouts completed'),
+                color: const Color.fromRGBO(180, 67, 108, 1),
+              ),
             ),
+            ConstrainedBox(
+              constraints: BoxConstraints.expand(height: 400, width: 1000),
+              child: const Card(
+                child: const Text('Hello World!'),
+                color: const Color.fromRGBO(247, 129, 84, 1),
+              ),
+            )
           ],
         ),
       ),
