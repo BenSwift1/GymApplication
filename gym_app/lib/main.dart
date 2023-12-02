@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
             style: TextStyle(
               color: Colors.white,
               fontSize: 40,
-              fontWeight: FontWeight.bold,
+              fontFamily: 'Futura',
             )),
       ),
       backgroundColor: const Color.fromRGBO(232, 241, 242, 1),
@@ -87,7 +87,11 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Card(
                 child: const Text(
                   'Hello World!',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Futura',
+                    fontSize: 12,
+                  ),
                 ),
                 color: const Color.fromRGBO(247, 129, 84, 1),
               ),
