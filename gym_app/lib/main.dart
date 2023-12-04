@@ -32,9 +32,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // APP BAR
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: const Color.fromRGBO(95, 173, 86, 1),
+        backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
         title: const Text('Gym App',
             style: TextStyle(
               color: Colors.white,
@@ -43,8 +44,10 @@ class _MyHomePageState extends State<MyHomePage> {
             )),
       ),
       backgroundColor: const Color.fromRGBO(232, 241, 242, 1),
+
+      // BOTTOM NAV BAR
       bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: const Color.fromRGBO(242, 193, 78, 1),
+          backgroundColor: const Color.fromRGBO(25, 130, 196, 1),
           elevation: 0,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -67,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            // TEXT BOX
             ConstrainedBox(
               constraints: BoxConstraints.expand(
                   height: MediaQuery.of(context).size.height *
@@ -75,11 +79,13 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Card(
                 child: const Text(
                   'Workouts completed',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
                 ),
-                color: const Color.fromRGBO(180, 67, 108, 1),
+                color: const Color.fromRGBO(255, 202, 58, 1),
               ),
             ),
+
+            // TEXT BOX
             ConstrainedBox(
               constraints: BoxConstraints.expand(
                   height: MediaQuery.of(context).size.height * 0.40,
@@ -93,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     fontSize: 12,
                   ),
                 ),
-                color: const Color.fromRGBO(247, 129, 84, 1),
+                color: const Color.fromRGBO(138, 201, 38, 1),
               ),
             )
           ],
