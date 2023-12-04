@@ -77,11 +77,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       0.25, // Getting size of screen and then making box 25% of the height of the specific screen
                   width: MediaQuery.of(context).size.width * 0.85),
               child: const Card(
-                child: const Text(
+                color: Color.fromRGBO(255, 202, 58, 1),
+                child: Text(
                   'Workouts completed',
                   style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
                 ),
-                color: const Color.fromRGBO(255, 202, 58, 1),
               ),
             ),
 
@@ -91,7 +91,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: MediaQuery.of(context).size.height * 0.40,
                   width: MediaQuery.of(context).size.width * 0.85),
               child: const Card(
-                child: const Text(
+                color: Color.fromRGBO(138, 201, 38, 1),
+                child: Text(
                   'Hello World!',
                   style: TextStyle(
                     color: Colors.white,
@@ -99,10 +100,26 @@ class _MyHomePageState extends State<MyHomePage> {
                     fontSize: 12,
                   ),
                 ),
-                color: const Color.fromRGBO(138, 201, 38, 1),
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class SocialPage extends StatelessWidget {
+  const SocialPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('New Screen')),
+      body: const Center(
+        child: Text(
+          'This is a new screen',
+          style: TextStyle(fontSize: 24.0),
         ),
       ),
     );
