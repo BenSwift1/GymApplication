@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app/social.dart';
+import 'package:gym_app/workouts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,6 +31,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,25 +51,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
       // BOTTOM NAV BAR
       bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: const Color.fromRGBO(25, 130, 196, 1),
-          elevation: 0,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.call,
-                color: Colors.white,
-              ),
-              label: 'Home',
+        backgroundColor: const Color.fromRGBO(25, 130, 196, 1),
+        elevation: 0,
+        currentIndex: _currentIndex,
+        onTap: (index) => _onBottomNavigationBarItemTapped(context, index),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.call,
+              color: Colors.white,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.camera),
-              label: 'Social',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.chat),
-              label: 'Workouts',
-            ),
-          ]),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera),
+            label: 'Social',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Workouts',
+          ),
+        ],
+      ),
+
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -107,21 +115,28 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
 
-class SocialPage extends StatelessWidget {
-  const SocialPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('New Screen')),
-      body: const Center(
-        child: Text(
-          'This is a new screen',
-          style: TextStyle(fontSize: 24.0),
-        ),
-      ),
-    );
+  void _onBottomNavigationBarItemTapped(BuildContext context, int index) {
+    setState(() {
+      _currentIndex = index;
+      // Navigate to the corresponding screen
+      switch (index) {
+        case 0:
+          // Navigate to the Home screen if needed
+          break;
+        case 1:
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SocialPage()),
+          );
+          break;
+        case 2:
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const workoutsPage()),
+          );
+          break;
+      }
+    });
   }
 }
