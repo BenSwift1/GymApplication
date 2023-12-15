@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Card(
                 color: Color.fromRGBO(255, 202, 58, 1),
                 child: Text(
-                  'Workouts completed',
+                  'Workouts completed: 0',
                   style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
                 ),
               ),
@@ -119,15 +119,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onBottomNavigationBarItemTapped(BuildContext context, int index) {
     setState(() {
       _currentIndex = index;
-      // Navigate to the corresponding screen
       switch (index) {
         case 0:
-          // Navigate to the Home screen if needed
           break;
         case 1:
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const SocialPage()),
+            MaterialPageRoute(builder: (context) => const socialPage()),
           );
           break;
         case 2:

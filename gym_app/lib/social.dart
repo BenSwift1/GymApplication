@@ -5,16 +5,43 @@ void main() {
   runApp(const MyApp());
 }
 
-class SocialPage extends StatelessWidget {
-  const SocialPage({super.key, Key? key2});
+class socialPage extends StatelessWidget {
+  const socialPage({super.key, Key? key2});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Social Page')),
+      appBar: AppBar(
+        title: const Text(
+          'Social Page',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromRGBO(25, 130, 196, 1),
+        elevation: 0,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.call,
+              color: Colors.white,
+            ),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera),
+            label: 'Social',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Workouts',
+          ),
+        ],
+      ),
       body: const Center(
         child: Text(
-          'This is the Social Page',
+          'This is the social Page',
           style: TextStyle(fontSize: 24.0),
         ),
       ),
@@ -22,16 +49,16 @@ class SocialPage extends StatelessWidget {
   }
 }
 
-class socialPage extends StatefulWidget {
-  const socialPage({super.key, required this.title});
+class SocialPage extends StatefulWidget {
+  const SocialPage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<socialPage> createState() => _socialPageState();
+  State<SocialPage> createState() => _SocialPageState();
 }
 
-class _socialPageState extends State<socialPage> {
+class _SocialPageState extends State<SocialPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold();
