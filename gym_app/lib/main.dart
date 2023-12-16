@@ -2,10 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_app/social.dart';
 import 'package:gym_app/workouts.dart';
+import 'dart:async';
 
 void main() {
   runApp(const MyApp());
 }
+
+List<String> practiceText = ['Yoohoo'];
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -33,6 +36,29 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
+
+  late Timer periodicTimer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    periodicTimer = Timer.periodic(
+      const Duration(seconds: 3), // Timer called every 3 seconds to change text
+      (timer) {
+        setState(() {
+          practiceText = (['Yoohoo', 'John Mcginn', 'Kachow', 'Will Grigg']
+            ..shuffle()); // Gets random text from array
+        });
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    periodicTimer.cancel(); // if UI disposed timer stops
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,10 +125,10 @@ class _MyHomePageState extends State<MyHomePage> {
               constraints: BoxConstraints.expand(
                   height: MediaQuery.of(context).size.height * 0.40,
                   width: MediaQuery.of(context).size.width * 0.85),
-              child: const Card(
-                color: Color.fromRGBO(138, 201, 38, 1),
+              child: Card(
+                color: const Color.fromRGBO(138, 201, 38, 1),
                 child: Text(
-                  'Hello World!',
+                  practiceText.first,
                   style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'Futura',
