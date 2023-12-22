@@ -18,48 +18,6 @@ class workoutsPage extends StatelessWidget {
         ),
         backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: null,
-                  child: Text('Create workout'),
-                ),
-                ElevatedButton(
-                  onPressed: null,
-                  child: Text('Edit workout'),
-                ),
-                ElevatedButton(
-                  onPressed: null,
-                  child: Text('Delete workout'),
-                ),
-              ],
-            ),
-            SizedBox(height: 20), // Space between rows
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: null,
-                  child: Text('Push'),
-                ),
-                ElevatedButton(
-                  onPressed: null,
-                  child: Text('Pull'),
-                ),
-                ElevatedButton(
-                  onPressed: null,
-                  child: Text('Legs'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(25, 130, 196, 1),
         elevation: 0,
