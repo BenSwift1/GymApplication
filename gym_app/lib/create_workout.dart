@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app/main.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-void create_workout() {
-  // Your implementation for creating a workout
-  print('Creating workout...');
+class createWorkouts extends StatefulWidget {
+  const createWorkouts({Key? key}) : super(key: key);
+
+  @override
+  _CreateWorkoutsState createState() => _CreateWorkoutsState();
 }
 
-class createWorkouts extends StatelessWidget {
+class _CreateWorkoutsState extends State<createWorkouts> {
+  final List<String> exercises = [
+    'Deadlift',
+    'Bench Press',
+    'Squats',
+    'Pull-ups'
+  ];
+
+  TextEditingController myController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,27 +31,59 @@ class createWorkouts extends StatelessWidget {
         ),
         backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromRGBO(25, 130, 196, 1),
-        elevation: 0,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.call,
-              color: Colors.white,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TextField(
+            controller: myController,
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(),
+              hintText: 'Enter an exercise:',
             ),
-            label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera),
-            label: 'Social',
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                exercises.add(myController.text);
+                myController.clear(); // Clear text field
+              });
+            },
+            child: const Text('Add Exercise'),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Workouts',
+          ConstrainedBox(
+            constraints: BoxConstraints.expand(
+              height: MediaQuery.of(context).size.height * 0.60,
+              width: MediaQuery.of(context).size.width * 0.85,
+            ),
+            child: Card(
+              color: const Color.fromRGBO(255, 202, 58, 1),
+              child: ListView.builder(
+                itemCount: exercises.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(exercises[index]),
+                  );
+                },
+              ),
+            ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Gym App',
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
+      home: const createWorkouts(),
     );
   }
 }

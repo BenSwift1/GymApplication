@@ -3,7 +3,7 @@ import 'package:gym_app/main.dart';
 import 'package:gym_app/create_workout.dart';
 
 void main() {
-  runApp(const MyApp());
+  //runApp(const MyApp());
 }
 
 class workoutsPage extends StatelessWidget {
