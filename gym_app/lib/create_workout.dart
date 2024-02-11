@@ -19,6 +19,12 @@ class _CreateWorkoutsState extends State<createWorkouts> {
     'Pull-ups'
   ];
 
+  final List<String> workouts = [
+    'Workout 1',
+    'Workout 2',
+    'Workout 3',
+  ];
+
   TextEditingController myController = TextEditingController();
 
   @override
@@ -37,7 +43,7 @@ class _CreateWorkoutsState extends State<createWorkouts> {
           TextField(
             controller: myController,
             decoration: InputDecoration(
-              border: UnderlineInputBorder(),
+              border: const UnderlineInputBorder(),
               hintText: 'Enter an exercise:',
             ),
           ),
@@ -50,22 +56,71 @@ class _CreateWorkoutsState extends State<createWorkouts> {
             },
             child: const Text('Add Exercise'),
           ),
-          ConstrainedBox(
-            constraints: BoxConstraints.expand(
-              height: MediaQuery.of(context).size.height * 0.60,
-              width: MediaQuery.of(context).size.width * 0.85,
-            ),
-            child: Card(
-              color: const Color.fromRGBO(255, 202, 58, 1),
-              child: ListView.builder(
-                itemCount: exercises.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(exercises[index]),
-                  );
-                },
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.60,
+                    maxHeight: MediaQuery.of(context).size.height * 0.60,
+                  ),
+                  child: Card(
+                    color: const Color.fromRGBO(255, 202, 58, 1),
+                    child: ListView.builder(
+                      itemCount: exercises.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            // Handle click on exercise
+                            print('Clicked on exercise: ${exercises[index]}');
+                          },
+                          child: ListTile(
+                            title: Text(
+                              exercises[index],
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.35,
+                    maxHeight: MediaQuery.of(context).size.height * 0.60,
+                  ),
+                  child: Card(
+                    color: Color.fromRGBO(138, 201, 38, 1),
+                    child: ListView.builder(
+                      itemCount: workouts.length,
+                      itemBuilder: (context, index) {
+                        // Allows you to click an item in the list
+                        return GestureDetector(
+                          onTap: () {
+                            print('Clicked on workout: ${workouts[index]}');
+                          },
+                          child: ListTile(
+                            title: Text(
+                              workouts[index],
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
