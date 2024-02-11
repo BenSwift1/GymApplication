@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app/main.dart';
+import 'package:gym_app/create_workout.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class workoutsPage extends StatelessWidget {
-  const workoutsPage({super.key, Key? key3});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +17,7 @@ class workoutsPage extends StatelessWidget {
         ),
         backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -26,7 +25,12 @@ class workoutsPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 ElevatedButton(
-                  onPressed: null,
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            createWorkouts()), // Make sure the class name matches
+                  ),
                   child: Text('Create workout'),
                 ),
                 ElevatedButton(
@@ -82,21 +86,5 @@ class workoutsPage extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class WorkoutsPage extends StatefulWidget {
-  const WorkoutsPage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<WorkoutsPage> createState() => _WorkoutsPageState();
-}
-
-class _WorkoutsPageState extends State<WorkoutsPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
   }
 }

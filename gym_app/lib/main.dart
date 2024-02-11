@@ -8,7 +8,7 @@ void main() {
   runApp(const MyApp());
 }
 
-List<String> practiceText = ['Yoohoo'];
+List<String> practiceText = ['Test'];
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
       const Duration(seconds: 3), // Timer called every 3 seconds to change text
       (timer) {
         setState(() {
-          practiceText = (['Yoohoo', 'John Mcginn', 'Kachow', 'Will Grigg']
+          practiceText = (['Test 1', 'Test 2', 'Test 3', 'Test 4']
             ..shuffle()); // Gets random text from array
         });
       },
@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
-        title: const Text('Gym App',
+        title: const Text('SWIFT',
             style: TextStyle(
               color: Colors.white,
               fontSize: 40,
@@ -152,13 +152,13 @@ class _MyHomePageState extends State<MyHomePage> {
         case 1:
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const socialPage()),
+            MaterialPageRoute(builder: (context) => socialPage()),
           );
           break;
         case 2:
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const workoutsPage()),
+            MaterialPageRoute(builder: (context) => workoutsPage()),
           );
           break;
       }

@@ -5,15 +5,18 @@ void main() {
   runApp(const MyApp());
 }
 
-class workoutsPage extends StatelessWidget {
-  const workoutsPage({super.key, Key? key3});
+void create_workout() {
+  // Your implementation for creating a workout
+  print('Creating workout...');
+}
 
+class createWorkouts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'WORKOUT Page',
+          'Create Workouts',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
@@ -40,21 +43,5 @@ class workoutsPage extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class WorkoutsPage extends StatefulWidget {
-  const WorkoutsPage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<WorkoutsPage> createState() => _WorkoutsPageState();
-}
-
-class _WorkoutsPageState extends State<WorkoutsPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
   }
 }

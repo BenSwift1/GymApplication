@@ -6,8 +6,6 @@ void main() {
 }
 
 class socialPage extends StatelessWidget {
-  const socialPage({super.key, Key? key2});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,21 +77,5 @@ class socialPage extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class SocialPage extends StatefulWidget {
-  const SocialPage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<SocialPage> createState() => _SocialPageState();
-}
-
-class _SocialPageState extends State<SocialPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
   }
 }
