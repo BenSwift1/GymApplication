@@ -33,6 +33,10 @@ class CommonBottomNavigationBar extends StatelessWidget {
           icon: Icon(Icons.chat),
           label: 'Workouts',
         ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.chat),
+          label: 'Progress',
+        ),
       ],
     );
   }

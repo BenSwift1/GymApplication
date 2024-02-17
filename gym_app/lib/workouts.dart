@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gym_app/main.dart';
 import 'package:gym_app/create_workout.dart';
 import 'package:gym_app/login.dart';
+import 'package:gym_app/start_workout.dart';
 
 void main() {
   //runApp(const MyApp());
@@ -33,8 +34,11 @@ class workoutsPage extends StatelessWidget {
                   child: Text('Create workout'),
                 ),
                 ElevatedButton(
-                  onPressed: null,
-                  child: Text('Edit workout'),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => startWorkoutPage()),
+                  ),
+                  child: Text('Start workout'),
                 ),
                 ElevatedButton(
                   onPressed: null,

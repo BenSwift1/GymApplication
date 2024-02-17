@@ -17,6 +17,7 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
     'Workout 1': ['Deadlift', 'Bench Press'],
     'Workout 2': ['Squats', 'Pull-ups'],
     'Workout 3': ['Deadlift', 'Squats', 'Pull-ups'],
+    'Workout 4': ['Rows', 'Pull downs', 'Bicep curls'],
   };
 
   String selectedWorkout = 'Workout 1';

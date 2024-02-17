@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gym_app/social.dart';
 import 'package:gym_app/workouts.dart';
 import 'package:gym_app/login.dart';
+import 'package:gym_app/progress.dart';
 
 import 'dart:async';
 
@@ -161,6 +162,11 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => workoutsPage()),
+          );
+        case 3:
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => progressPage()),
           );
           break;
       }
