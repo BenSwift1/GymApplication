@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // BOTTOM NAV BAR
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(25, 130, 196, 1),
-        elevation: 0,
+        elevation: 10,
         currentIndex: _currentIndex,
         onTap: (index) => _onBottomNavigationBarItemTapped(context, index),
         items: const <BottomNavigationBarItem>[
@@ -101,6 +101,10 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.chat),
             label: 'Workouts',
           ),
+          /*BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Prog',
+          ),*/
         ],
       ),
 
@@ -163,6 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
             context,
             MaterialPageRoute(builder: (context) => workoutsPage()),
           );
+          break;
         case 3:
           Navigator.push(
             context,

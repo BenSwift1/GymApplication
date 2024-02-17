@@ -12,7 +12,7 @@ class CreateWorkouts extends StatefulWidget {
 }
 
 class _CreateWorkoutsState extends State<CreateWorkouts> {
-  // Storing certain exercises in speficic workouts
+  // Storing certain exercises in specific workouts
   Map<String, List<String>> workouts = {
     'Workout 1': ['Deadlift', 'Bench Press'],
     'Workout 2': ['Squats', 'Pull-ups'],
@@ -71,20 +71,29 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
                   child: Card(
                     color: const Color.fromRGBO(255, 202, 58, 1),
                     child: ListView.builder(
-                      itemCount: workouts[selectedWorkout]?.length ?? 0,
+                      itemCount: workouts[selectedWorkout]?.length,
                       itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            print(
-                                'Clicked on exercise: ${workouts[selectedWorkout]![index]}');
-                          },
-                          child: ListTile(
-                            title: Text(
-                              workouts[selectedWorkout]![index],
-                              style: const TextStyle(
-                                color: Colors.white,
+                        return ListTile(
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                workouts[selectedWorkout]![index],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
+                              IconButton(
+                                icon: const Icon(Icons.remove),
+                                color: Color.fromARGB(255, 255, 255, 255),
+                                onPressed: () {
+                                  // Removing exercise on button click
+                                  setState(() {
+                                    workouts[selectedWorkout]!.removeAt(index);
+                                  });
+                                },
+                              ),
+                            ],
                           ),
                         );
                       },
