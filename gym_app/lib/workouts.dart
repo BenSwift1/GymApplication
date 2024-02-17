@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app/main.dart';
 import 'package:gym_app/create_workout.dart';
+import 'package:gym_app/login.dart';
 
 void main() {
   //runApp(const MyApp());
@@ -27,9 +28,7 @@ class workoutsPage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            createWorkouts()), // Make sure the class name matches
+                    MaterialPageRoute(builder: (context) => CreateWorkouts()),
                   ),
                   child: Text('Create workout'),
                 ),
@@ -48,8 +47,11 @@ class workoutsPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 ElevatedButton(
-                  onPressed: null,
-                  child: Text('Push'),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Login()),
+                  ),
+                  child: Text('Login'),
                 ),
                 ElevatedButton(
                   onPressed: null,

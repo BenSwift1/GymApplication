@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Auth {
@@ -29,7 +27,6 @@ class Auth {
     try {
       await _firebaseAuth.signOut();
     } catch (e) {
-      // Handle the error in a way that makes sense for your application.
       print("Error signing out: $e");
     }
   }

@@ -4,26 +4,22 @@ void main() {
   runApp(const MyApp());
 }
 
-class createWorkouts extends StatefulWidget {
-  const createWorkouts({Key? key}) : super(key: key);
+class CreateWorkouts extends StatefulWidget {
+  const CreateWorkouts({Key? key}) : super(key: key);
 
   @override
   _CreateWorkoutsState createState() => _CreateWorkoutsState();
 }
 
-class _CreateWorkoutsState extends State<createWorkouts> {
-  final List<String> exercises = [
-    'Deadlift',
-    'Bench Press',
-    'Squats',
-    'Pull-ups'
-  ];
+class _CreateWorkoutsState extends State<CreateWorkouts> {
+  // Storing certain exercises in speficic workouts
+  Map<String, List<String>> workouts = {
+    'Workout 1': ['Deadlift', 'Bench Press'],
+    'Workout 2': ['Squats', 'Pull-ups'],
+    'Workout 3': ['Deadlift', 'Squats', 'Pull-ups'],
+  };
 
-  final List<String> workouts = [
-    'Workout 1',
-    'Workout 2',
-    'Workout 3',
-  ];
+  String selectedWorkout = 'Workout 1';
 
   TextEditingController myController = TextEditingController();
 
@@ -48,10 +44,16 @@ class _CreateWorkoutsState extends State<createWorkouts> {
             ),
           ),
           ElevatedButton(
+            // Adding exercise button
             onPressed: () {
               setState(() {
-                exercises.add(myController.text);
-                myController.clear(); // Clear text field
+                final exercise = myController.text;
+                if (workouts.containsKey(selectedWorkout)) {
+                  workouts[selectedWorkout]!.add(exercise);
+                } else {
+                  workouts[selectedWorkout] = [exercise];
+                }
+                myController.clear(); // Clearing text
               });
             },
             child: const Text('Add Exercise'),
@@ -68,16 +70,16 @@ class _CreateWorkoutsState extends State<createWorkouts> {
                   child: Card(
                     color: const Color.fromRGBO(255, 202, 58, 1),
                     child: ListView.builder(
-                      itemCount: exercises.length,
+                      itemCount: workouts[selectedWorkout]?.length ?? 0,
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            // Handle click on exercise
-                            print('Clicked on exercise: ${exercises[index]}');
+                            print(
+                                'Clicked on exercise: ${workouts[selectedWorkout]![index]}');
                           },
                           child: ListTile(
                             title: Text(
-                              exercises[index],
+                              workouts[selectedWorkout]![index],
                               style: const TextStyle(
                                 color: Colors.white,
                               ),
@@ -101,14 +103,17 @@ class _CreateWorkoutsState extends State<createWorkouts> {
                     child: ListView.builder(
                       itemCount: workouts.length,
                       itemBuilder: (context, index) {
-                        // Allows you to click an item in the list
                         return GestureDetector(
                           onTap: () {
-                            print('Clicked on workout: ${workouts[index]}');
+                            // Clicking on workout
+                            setState(() {
+                              selectedWorkout = workouts.keys.toList()[index];
+                            });
+                            print('Clicked on workout: $selectedWorkout');
                           },
                           child: ListTile(
                             title: Text(
-                              workouts[index],
+                              workouts.keys.toList()[index],
                               style: const TextStyle(
                                 color: Colors.white,
                               ),
@@ -138,7 +143,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const createWorkouts(),
+      home: const CreateWorkouts(),
     );
   }
 }
