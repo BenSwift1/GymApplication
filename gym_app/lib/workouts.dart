@@ -8,7 +8,22 @@ void main() {
   //runApp(const MyApp());
 }
 
-class workoutsPage extends StatelessWidget {
+class workoutsPage extends StatefulWidget {
+  @override
+  _WorkoutsPageState createState() => _WorkoutsPageState();
+}
+
+class _WorkoutsPageState extends State<workoutsPage> {
+  // Trak which box
+  int workoutBox = 0;
+
+  // Box for each workout
+  List<String> workoutBoxes = [
+    'Workout 1',
+    'Workout 2',
+    'Workout 3',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,9 +82,47 @@ class workoutsPage extends StatelessWidget {
                 ),
               ],
             ),
+            SizedBox(height: 20),
+            Dismissible(
+              key: UniqueKey(),
+              // Used to dismiss workout widgets
+              onDismissed: (DismissDirection direction) {
+                setState(() {
+                  // Swiping right on box changes to old workouts
+                  if (direction == DismissDirection.endToStart) {
+                    workoutBox = (workoutBox + 1) % workoutBoxes.length;
+                  }
+                  // Swiping left goes back
+                  if (direction == DismissDirection.startToEnd) {
+                    workoutBox = (workoutBox - 1) % workoutBoxes.length;
+                  }
+                });
+              },
+              // Design of the workout boxes
+              background: Container(
+                color: const Color.fromARGB(255, 254, 183, 178),
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.symmetric(horizontal: 20),
+              ),
+              child: Container(
+                width: 200,
+                height: 200,
+                color: const Color.fromARGB(255, 193, 140, 136),
+                child: Center(
+                  child: Text(
+                    workoutBoxes[workoutBox],
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
+      // Navbar
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(25, 130, 196, 1),
         elevation: 0,
