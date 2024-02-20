@@ -4,18 +4,20 @@ import 'package:gym_app/social.dart';
 import 'package:gym_app/workouts.dart';
 import 'package:gym_app/login.dart';
 import 'package:gym_app/progress.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'dart:async';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
 
 List<String> practiceText = ['Test'];
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+  const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,13 +25,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Gym App'),
+      home: Login(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
