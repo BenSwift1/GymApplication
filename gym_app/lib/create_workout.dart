@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,6 +21,25 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
     'Workout 3': ['Deadlift', 'Squats', 'Pull-ups'],
     'Workout 4': ['Rows', 'Pull downs', 'Bicep curls'],
   };
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> saveWorkoutData() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      final userId = user.uid;
+      final workoutRef =
+          FirebaseFirestore.instance.collection('workouts').doc(userId);
+
+      // Generate a unique document ID using add method
+      final workoutDocRef = await workoutRef.collection('user_workouts').add({
+        'workoutNumber': selectedWorkout,
+        'exercises': workouts[selectedWorkout],
+      });
+
+      print('Workout saved with ID: ${workoutDocRef.id}');
+    }
+  }
 
   String selectedWorkout = 'Workout 1';
 
@@ -46,17 +67,17 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
           ),
           ElevatedButton(
             // Adding exercise button
-            onPressed: () {
-              setState(() {
-                final exercise = myController.text;
-                if (workouts.containsKey(selectedWorkout)) {
-                  workouts[selectedWorkout]!.add(exercise);
-                } else {
-                  workouts[selectedWorkout] = [exercise];
-                }
-                myController.clear(); // Clearing text
-              });
+            onPressed: () async {
+              final exercise = myController.text;
+              if (workouts.containsKey(selectedWorkout)) {
+                workouts[selectedWorkout]!.add(exercise);
+                await saveWorkoutData(); // Wait for the Firestore operation to complete
+              } else {
+                workouts[selectedWorkout] = [exercise];
+              }
+              myController.clear(); // Clearing text
             },
+
             child: const Text('Add Exercise'),
           ),
           Row(
