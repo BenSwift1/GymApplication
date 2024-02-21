@@ -14,15 +14,49 @@ class CreateWorkouts extends StatefulWidget {
 }
 
 class _CreateWorkoutsState extends State<CreateWorkouts> {
-  // Storing certain exercises in specific workouts
-  Map<String, List<String>> workouts = {
-    'Workout 1': ['Deadlift', 'Bench Press'],
-    'Workout 2': ['Squats', 'Pull-ups'],
-    'Workout 3': ['Deadlift', 'Squats', 'Pull-ups'],
-    'Workout 4': ['Rows', 'Pull downs', 'Bicep curls'],
-  };
-
+  Map<String, List<String>> workouts = {};
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String selectedWorkout = 'Workout 1';
+  TextEditingController myController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadWorkoutsData();
+  }
+
+  Future<void> loadWorkoutsData() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      print('User ID: ${user.uid}');
+
+      final userId = user.uid;
+      final workoutRef =
+          FirebaseFirestore.instance.collection('workouts').doc(userId);
+
+      try {
+        final workoutData = await workoutRef.collection('user_workouts').get();
+        print('Workout data loaded successfully.');
+
+        for (final doc in workoutData.docs) {
+          final workoutNumber = doc['workoutNumber'] as String;
+          final exercises =
+              List<String>.from(doc['exercises'] as List<dynamic>);
+          workouts[workoutNumber] = exercises;
+        }
+
+        if (workouts.isNotEmpty) {
+          selectedWorkout = workouts.keys.first;
+        }
+
+        setState(() {});
+      } catch (e) {
+        print('Error loading workout data: $e');
+      }
+    } else {
+      print('User is not authenticated. Redirect to login page.');
+    }
+  }
 
   Future<void> saveWorkoutData() async {
     final user = _auth.currentUser;
@@ -31,19 +65,35 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
       final workoutRef =
           FirebaseFirestore.instance.collection('workouts').doc(userId);
 
-      // Generate a unique document ID using add method
-      final workoutDocRef = await workoutRef.collection('user_workouts').add({
-        'workoutNumber': selectedWorkout,
-        'exercises': workouts[selectedWorkout],
-      });
+      final workoutDoc = await workoutRef
+          .collection('user_workouts')
+          .doc(selectedWorkout)
+          .get();
 
-      print('Workout saved with ID: ${workoutDocRef.id}');
+      try {
+        if (workoutDoc.exists) {
+          await workoutRef
+              .collection('user_workouts')
+              .doc(selectedWorkout)
+              .update({
+            'exercises': FieldValue.arrayUnion(workouts[selectedWorkout]!),
+          });
+        } else {
+          await workoutRef
+              .collection('user_workouts')
+              .doc(selectedWorkout)
+              .set({
+            'workoutNumber': selectedWorkout,
+            'exercises': workouts[selectedWorkout],
+          });
+        }
+
+        print('Workout data updated for: $selectedWorkout');
+      } catch (e) {
+        print('Error saving workout data: $e');
+      }
     }
   }
-
-  String selectedWorkout = 'Workout 1';
-
-  TextEditingController myController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -66,18 +116,16 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
             ),
           ),
           ElevatedButton(
-            // Adding exercise button
             onPressed: () async {
               final exercise = myController.text;
               if (workouts.containsKey(selectedWorkout)) {
                 workouts[selectedWorkout]!.add(exercise);
-                await saveWorkoutData(); // Wait for the Firestore operation to complete
+                await saveWorkoutData();
               } else {
                 workouts[selectedWorkout] = [exercise];
               }
-              myController.clear(); // Clearing text
+              myController.clear();
             },
-
             child: const Text('Add Exercise'),
           ),
           Row(
@@ -108,7 +156,6 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
                                 icon: const Icon(Icons.remove),
                                 color: Color.fromARGB(255, 255, 255, 255),
                                 onPressed: () {
-                                  // Removing exercise on button click
                                   setState(() {
                                     workouts[selectedWorkout]!.removeAt(index);
                                   });
@@ -136,7 +183,6 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            // Clicking on workout
                             setState(() {
                               selectedWorkout = workouts.keys.toList()[index];
                             });
