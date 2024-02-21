@@ -25,6 +25,16 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
     loadWorkoutsData();
   }
 
+  void initializeDefaultWorkouts() {
+    // Basic workouts
+    workouts = {
+      'Workout 1': ['Deadlift', 'Bench Press'],
+      'Workout 2': ['Pull-ups', 'Dumbell Row'],
+      'Workout 3': ['Squat', 'Leg press'],
+    };
+    selectedWorkout = workouts.keys.first;
+  }
+
   Future<void> loadWorkoutsData() async {
     final user = _auth.currentUser;
     if (user != null) {
@@ -36,25 +46,44 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
 
       try {
         final workoutData = await workoutRef.collection('user_workouts').get();
-        print('Workout data loaded successfully.');
-
-        for (final doc in workoutData.docs) {
-          final workoutNumber = doc['workoutNumber'] as String;
-          final exercises =
-              List<String>.from(doc['exercises'] as List<dynamic>);
-          workouts[workoutNumber] = exercises;
+        if (workoutData.docs.isEmpty) {
+          initializeDefaultWorkouts();
+          saveDefaultWorkoutsToFirestore(userId);
+        } else {
+          print('Workout data loaded successfully.');
+          workouts.clear(); // Clear existing data to reload from Firestore
+          for (final doc in workoutData.docs) {
+            final workoutNumber = doc['workoutNumber'] as String;
+            final exercises =
+                List<String>.from(doc['exercises'] as List<dynamic>);
+            workouts[workoutNumber] = exercises;
+          }
+          if (workouts.isNotEmpty) {
+            selectedWorkout = workouts.keys.first;
+          }
         }
-
-        if (workouts.isNotEmpty) {
-          selectedWorkout = workouts.keys.first;
-        }
-
         setState(() {});
       } catch (e) {
         print('Error loading workout data: $e');
       }
     } else {
       print('User is not authenticated. Redirect to login page.');
+    }
+  }
+
+  Future<void> saveDefaultWorkoutsToFirestore(String userId) async {
+    final workoutRef =
+        FirebaseFirestore.instance.collection('workouts').doc(userId);
+    try {
+      workouts.forEach((workoutNumber, exercises) async {
+        await workoutRef.collection('user_workouts').doc(workoutNumber).set({
+          'workoutNumber': workoutNumber,
+          'exercises': exercises,
+        });
+      });
+      print('Default workout data saved to Firestore.');
+    } catch (e) {
+      print('Error saving default workout data: $e');
     }
   }
 
