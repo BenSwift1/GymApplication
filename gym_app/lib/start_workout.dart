@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gym_app/workouts.dart';
 
 class startWorkoutPage extends StatefulWidget {
   @override
@@ -8,7 +9,7 @@ class startWorkoutPage extends StatefulWidget {
 }
 
 class _StartWorkoutPageState extends State<startWorkoutPage> {
-  // List to store workouts
+  // Storing workouts
   List<String> workouts = [];
 
   @override
@@ -37,14 +38,10 @@ class _StartWorkoutPageState extends State<startWorkoutPage> {
                 .map((doc) => doc['workoutNumber'] as String)
                 .toList();
           });
-        } else {
-          print('No workout data found.');
         }
-      } else {
-        print('User is not authenticated.');
       }
     } catch (e) {
-      print('Error fetching workout data: $e');
+      print('Error geetting data needed: $e');
     }
   }
 
@@ -81,11 +78,18 @@ class _StartWorkoutPageState extends State<startWorkoutPage> {
                   itemCount: workouts.length, // getting amount of workouts
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(
-                        workouts[index],
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    );
+                        title: Text(
+                          workouts[index],
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onTap: () {
+                          // When text is clicked it returns you to workouts page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => workoutsPage()),
+                          );
+                        });
                   },
                 ),
               ),
