@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_app/workouts.dart';
+import 'package:gym_app/underway_workout.dart';
 
 class startWorkoutPage extends StatefulWidget {
   @override
@@ -87,7 +88,7 @@ class _StartWorkoutPageState extends State<startWorkoutPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => workoutsPage()),
+                                builder: (context) => UnderwayWorkoutPage()),
                           );
                         });
                   },

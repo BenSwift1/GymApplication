@@ -3,6 +3,7 @@ import 'package:gym_app/main.dart';
 import 'package:gym_app/create_workout.dart';
 import 'package:gym_app/login.dart';
 import 'package:gym_app/start_workout.dart';
+import 'package:gym_app/underway_workout.dart';
 
 void main() {
   //runApp(const MyApp());
@@ -51,7 +52,8 @@ class _WorkoutsPageState extends State<workoutsPage> {
                 ElevatedButton(
                   onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => startWorkoutPage()),
+                    MaterialPageRoute(
+                        builder: (context) => UnderwayWorkoutPage()),
                   ),
                   child: Text('Start workout'),
                 ),
