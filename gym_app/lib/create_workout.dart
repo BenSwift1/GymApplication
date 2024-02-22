@@ -81,9 +81,8 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
           'exercises': exercises,
         });
       });
-      print('Default workout data saved to Firestore.');
     } catch (e) {
-      print('Error saving default workout data: $e');
+      print('Error saving default workout $e');
     }
   }
 
@@ -116,6 +115,34 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
             'exercises': workouts[selectedWorkout],
           });
         }
+
+        print('Workout data updated for: $selectedWorkout');
+      } catch (e) {
+        print('Error saving workout data: $e');
+      }
+    }
+  }
+
+  Future<void> saveRemovedWorkoutData(String removedExercise) async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      final userId = user.uid;
+      final workoutRef =
+          FirebaseFirestore.instance.collection('workouts').doc(userId);
+
+      try {
+        if (workouts[selectedWorkout]!.contains(removedExercise)) {
+          await workoutRef
+              .collection('user_workouts')
+              .doc(selectedWorkout)
+              .update({
+            'exercises': FieldValue.arrayRemove([removedExercise]),
+          });
+        }
+
+        setState(() {
+          workouts[selectedWorkout]!.remove(removedExercise);
+        });
 
         print('Workout data updated for: $selectedWorkout');
       } catch (e) {
@@ -184,10 +211,14 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
                               IconButton(
                                 icon: const Icon(Icons.remove),
                                 color: Color.fromARGB(255, 255, 255, 255),
-                                onPressed: () {
+                                onPressed: () async {
+                                  final removedExercise =
+                                      workouts[selectedWorkout]![index];
                                   setState(() {
-                                    workouts[selectedWorkout]!.removeAt(index);
+                                    workouts[selectedWorkout]!
+                                        .remove(removedExercise);
                                   });
+                                  await saveRemovedWorkoutData(removedExercise);
                                 },
                               ),
                             ],

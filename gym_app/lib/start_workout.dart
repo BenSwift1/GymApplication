@@ -1,8 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app/create_workout.dart';
-import 'package:gym_app/login.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class startWorkoutPage extends StatelessWidget {
+class startWorkoutPage extends StatefulWidget {
+  @override
+  _StartWorkoutPageState createState() => _StartWorkoutPageState();
+}
+
+class _StartWorkoutPageState extends State<startWorkoutPage> {
+  // List to store workouts
+  List<String> workouts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    gettingWorkouts();
+  }
+
+  Future<void> gettingWorkouts() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        final userId = user.uid;
+
+        // Getting workouts from databse collection
+        final workoutRef =
+            FirebaseFirestore.instance.collection('workouts').doc(userId);
+
+        // When in collection getting the user workouts
+        final workoutDB = await workoutRef.collection('user_workouts').get();
+
+        if (workoutDB.docs.isNotEmpty) {
+          setState(() {
+            workouts = workoutDB.docs
+                .map((doc) => doc['workoutNumber'] as String)
+                .toList();
+          });
+        } else {
+          print('No workout data found.');
+        }
+      } else {
+        print('User is not authenticated.');
+      }
+    } catch (e) {
+      print('Error fetching workout data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,11 +76,17 @@ class startWorkoutPage extends StatelessWidget {
                   color: Colors.red,
                   borderRadius: BorderRadius.circular(5.0),
                 ),
-                child: Center(
-                  child: Text(
-                    'Workouts',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                child: ListView.builder(
+                  // List so there can be infinite space
+                  itemCount: workouts.length, // getting amount of workouts
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        workouts[index],
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
