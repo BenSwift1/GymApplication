@@ -33,12 +33,10 @@ class MyApp extends StatelessWidget {
         future: _initialization,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            // Firebase initialized successfully
             return Login();
           }
 
           if (snapshot.hasError) {
-            // Error initializing Firebase
             return Scaffold(
               body: Center(
                 child: Text('Error initializing Firebase: ${snapshot.error}'),
@@ -106,20 +104,20 @@ class _MyLoginPageState extends State<MyLoginPage> {
         return ListView(
           scrollDirection: Axis.vertical,
           padding: const EdgeInsets.all(16),
-          children: <Widget>[_RegisterEmailSection(), _EmailPasswordForm()],
+          children: <Widget>[registerEmail(), _EmailPasswordForm()],
         );
       }),
     );
   }
 }
 
-class _RegisterEmailSection extends StatefulWidget {
+class registerEmail extends StatefulWidget {
   final String title = 'Registration';
   @override
-  State<StatefulWidget> createState() => _RegisterEmailSectionState();
+  State<StatefulWidget> createState() => registerEmailState();
 }
 
-class _RegisterEmailSectionState extends State<_RegisterEmailSection> {
+class registerEmailState extends State<registerEmail> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -130,9 +128,9 @@ class _RegisterEmailSectionState extends State<_RegisterEmailSection> {
   @override
   Widget build(BuildContext) {
     if (Firebase.apps.isNotEmpty) {
-      print("Firebase is initialized.");
+      print("Firebase successfully initialised.");
     } else {
-      print("Firebase is not initialized.");
+      print("Firebase failed to intialise. Restart app.");
     }
     return Form(
         key: _formKey,
@@ -144,7 +142,7 @@ class _RegisterEmailSectionState extends State<_RegisterEmailSection> {
               decoration: const InputDecoration(labelText: 'Email'),
               validator: (String? value) {
                 if (value!.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Enter your email...';
                 }
                 return null;
               },
@@ -154,7 +152,7 @@ class _RegisterEmailSectionState extends State<_RegisterEmailSection> {
               decoration: const InputDecoration(labelText: 'Password'),
               validator: (String? value) {
                 if (value!.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Enter your password...';
                 }
                 return null;
               },
@@ -181,11 +179,11 @@ class _RegisterEmailSectionState extends State<_RegisterEmailSection> {
 
   void _register() async {
     try {
-      final userCredential = await _auth.createUserWithEmailAndPassword(
+      final userCreds = await _auth.createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
-      final user = userCredential.user;
+      final user = userCreds.user;
       if (user != null) {
         setState(() {
           _userEmail = user.email!;
