@@ -42,6 +42,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
 
+  // Colours
+  //List<int> colours = [111, 111, 111];
+
   late Timer periodicTimer;
 
   @override
@@ -167,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
         case 2:
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => workoutsPage()),
+            MaterialPageRoute(builder: (context) => WorkoutsPage()),
           );
           break;
         case 3:

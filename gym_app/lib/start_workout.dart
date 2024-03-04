@@ -84,7 +84,7 @@ class _StartWorkoutPageState extends State<startWorkoutPage> {
                           style: TextStyle(color: Colors.white),
                         ),
                         onTap: () {
-                          // When text is clicked it returns you to workouts page
+                          // When text is clicked it taks you to underway workout page of specific workout
                           Navigator.push(
                             context,
                             MaterialPageRoute(

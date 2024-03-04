@@ -1,29 +1,72 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app/main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_app/create_workout.dart';
 import 'package:gym_app/login.dart';
-import 'package:gym_app/start_workout.dart';
 import 'package:gym_app/underway_workout.dart';
 
-void main() {
-  //runApp(const MyApp());
-}
-
-class workoutsPage extends StatefulWidget {
+class WorkoutsPage extends StatefulWidget {
   @override
   _WorkoutsPageState createState() => _WorkoutsPageState();
 }
 
-class _WorkoutsPageState extends State<workoutsPage> {
-  // Trak which box
+class _WorkoutsPageState extends State<WorkoutsPage> {
   int workoutBox = 0;
+  List<String> workoutBoxes = ['Workout 1', 'Workout 2', 'Workout 3'];
+  List<List<Map<String, dynamic>>> allWorkouts = [];
 
-  // Box for each workout
-  List<String> workoutBoxes = [
-    'Workout 1',
-    'Workout 2',
-    'Workout 3',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    getWorkoutData();
+  }
+
+  Future<void> getWorkoutData() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final userId = user.uid;
+
+        QuerySnapshot workoutSnapshot = await FirebaseFirestore.instance
+            .collection('workouts')
+            .doc(userId)
+            .collection('completed_workouts')
+            .get();
+
+        if (workoutSnapshot.docs.isNotEmpty) {
+          List<List<Map<String, dynamic>>> allWorkoutsData = [];
+
+          workoutSnapshot.docs.forEach((DocumentSnapshot document) {
+            Map<String, dynamic> workoutData =
+                document.data() as Map<String, dynamic>;
+            List<dynamic> exercises = workoutData['exercises'];
+
+            List<Map<String, dynamic>> mappedExercises = [];
+            for (var exercise in exercises) {
+              mappedExercises.add(exercise as Map<String, dynamic>);
+            }
+
+            allWorkoutsData.add(mappedExercises);
+          });
+
+          setState(() {
+            allWorkouts = allWorkoutsData;
+          });
+        } else {
+          print('User hasnt completed any workouts');
+        }
+      }
+    } catch (e) {
+      print('Error reading exercise data from database: $e');
+    }
+  }
+
+  void switchingNextWorkout() {
+    setState(() {
+      //workoutBox = (workoutBox + 1) % allWorkouts.length;
+      workoutBox = (workoutBox + 1) % workoutBoxes.length;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,96 +78,101 @@ class _WorkoutsPageState extends State<workoutsPage> {
         ),
         backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CreateWorkouts()),
-                  ),
-                  child: Text('Create workout'),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          // Buttons for navigating to other pages
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CreateWorkouts()),
                 ),
-                ElevatedButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => UnderwayWorkoutPage()),
-                  ),
-                  child: Text('Start workout'),
-                ),
-                ElevatedButton(
-                  onPressed: null,
-                  child: Text('Delete workout'),
-                ),
-              ],
-            ),
-            SizedBox(height: 20), // Space between rows
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Login()),
-                  ),
-                  child: Text('Login'),
-                ),
-                ElevatedButton(
-                  onPressed: null,
-                  child: Text('Pull'),
-                ),
-                ElevatedButton(
-                  onPressed: null,
-                  child: Text('Legs'),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Dismissible(
-              key: UniqueKey(),
-              // Used to dismiss workout widgets
-              onDismissed: (DismissDirection direction) {
-                setState(() {
-                  // Swiping right on box changes to old workouts
-                  if (direction == DismissDirection.endToStart) {
-                    workoutBox = (workoutBox + 1) % workoutBoxes.length;
-                  }
-                  // Swiping left goes back
-                  if (direction == DismissDirection.startToEnd) {
-                    workoutBox = (workoutBox - 1) % workoutBoxes.length;
-                  }
-                });
-              },
-              // Design of the workout boxes
-              background: Container(
-                color: const Color.fromARGB(255, 254, 183, 178),
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text('Create workout'),
               ),
-              child: Container(
-                width: 200,
-                height: 200,
-                color: const Color.fromARGB(255, 193, 140, 136),
-                child: Center(
-                  child: Text(
-                    workoutBoxes[workoutBox],
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+              ElevatedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UnderwayWorkoutPage(),
+                  ),
+                ),
+                child: Text('Start workout'),
+              ),
+              ElevatedButton(
+                onPressed: null,
+                child: Text('Delete workout'),
+              ),
+            ],
+          ),
+          SizedBox(height: 20), // Space between rows
+          // Additional buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Login()),
+                ),
+                child: Text('Login'),
+              ),
+              ElevatedButton(
+                onPressed: null,
+                child: Text('Pull'),
+              ),
+              ElevatedButton(
+                onPressed: null,
+                child: Text('Legs'),
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          // Dismissible widget for workout box so can switch between workout data
+          Dismissible(
+            key: UniqueKey(),
+            onDismissed: (DismissDirection direction) {
+              switchingNextWorkout();
+            },
+            background: Container(
+              color: const Color.fromARGB(255, 254, 183, 178),
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.symmetric(horizontal: 20),
+            ),
+            child: Container(
+              width: 200,
+              height: 200,
+              color: const Color.fromARGB(255, 193, 140, 136),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      workoutBoxes[workoutBox],
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+                    SizedBox(height: 10),
+                    // Getting workouts from firebase and putting in box
+                    if (allWorkouts.isNotEmpty &&
+                        allWorkouts[workoutBox].isNotEmpty)
+                      for (var details in allWorkouts[workoutBox])
+                        Text(
+                          'Exercise: ${details['exercise']}\nReps: ${details['reps']}\nWeight: ${details['weight']}',
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      // Navbar
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(25, 130, 196, 1),
         elevation: 0,

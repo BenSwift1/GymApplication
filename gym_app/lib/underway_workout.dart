@@ -117,7 +117,7 @@ class _TrackExerciseState extends State<TrackExercise> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(widget.exerciseName, style: TextStyle(color: Colors.white)),
+      title: Text(widget.exerciseName, style: TextStyle(color: Colors.black)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
