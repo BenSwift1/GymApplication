@@ -61,10 +61,15 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     }
   }
 
-  void switchingNextWorkout() {
+  void switchWorkoutForward() {
     setState(() {
-      //workoutBox = (workoutBox + 1) % allWorkouts.length;
       workoutBox = (workoutBox + 1) % workoutBoxes.length;
+    });
+  }
+
+  void switchWorkoutBackward() {
+    setState(() {
+      workoutBox = (workoutBox - 1) % allWorkouts.length;
     });
   }
 
@@ -129,12 +134,17 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
               ),
             ],
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 40), // Padding above
           // Dismissible widget for workout box so can switch between workout data
           Dismissible(
             key: UniqueKey(),
             onDismissed: (DismissDirection direction) {
-              switchingNextWorkout();
+              if (direction == DismissDirection.endToStart) {
+                switchWorkoutForward();
+              }
+              if (direction == DismissDirection.startToEnd) {
+                switchWorkoutBackward();
+              }
             },
             background: Container(
               color: const Color.fromARGB(255, 254, 183, 178),
@@ -142,8 +152,8 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
               padding: EdgeInsets.symmetric(horizontal: 20),
             ),
             child: Container(
-              width: 200,
-              height: 200,
+              width: 250,
+              height: 400,
               color: const Color.fromARGB(255, 193, 140, 136),
               child: Center(
                 child: Column(
@@ -154,6 +164,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
+                        fontSize: 30,
                       ),
                     ),
                     SizedBox(height: 10),
@@ -162,8 +173,8 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                         allWorkouts[workoutBox].isNotEmpty)
                       for (var details in allWorkouts[workoutBox])
                         Text(
-                          'Exercise: ${details['exercise']}\nReps: ${details['reps']}\nWeight: ${details['weight']}',
-                          style: TextStyle(color: Colors.white),
+                          'Exercise: ${details['exercise']}\nReps: ${details['reps']}, Weight: ${details['weight']}\n',
+                          style: TextStyle(color: Colors.white, fontSize: 20),
                           textAlign: TextAlign.center,
                         ),
                   ],
