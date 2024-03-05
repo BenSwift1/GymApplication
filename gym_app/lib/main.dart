@@ -42,9 +42,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
 
-  // Colours
-  //List<int> colours = [111, 111, 111];
-
   late Timer periodicTimer;
 
   @override
@@ -74,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // APP BAR
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
+        backgroundColor: Colours.headSimple,
         title: const Text('SWIFT',
             style: TextStyle(
               color: Colors.white,
@@ -82,11 +79,11 @@ class _MyHomePageState extends State<MyHomePage> {
               fontFamily: 'Futura',
             )),
       ),
-      backgroundColor: const Color.fromRGBO(232, 241, 242, 1),
+      backgroundColor: Colours.backgroundSimple,
 
       // BOTTOM NAV BAR
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromRGBO(25, 130, 196, 1),
+        backgroundColor: Colours.navSimple,
         elevation: 10,
         currentIndex: _currentIndex,
         onTap: (index) => _onBottomNavigationBarItemTapped(context, index),
@@ -124,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       0.25, // Getting size of screen and then making box 25% of the height of the specific screen
                   width: MediaQuery.of(context).size.width * 0.85),
               child: const Card(
-                color: Color.fromRGBO(255, 202, 58, 1),
+                color: Colours.mainBoxSimple,
                 child: Text(
                   'Workouts completed: 0',
                   style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
@@ -138,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: MediaQuery.of(context).size.height * 0.40,
                   width: MediaQuery.of(context).size.width * 0.85),
               child: Card(
-                color: const Color.fromRGBO(138, 201, 38, 1),
+                color: Colours.otherBoxSimple,
                 child: Text(
                   practiceText.first,
                   style: TextStyle(
@@ -182,4 +179,24 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
   }
+}
+
+class Colours {
+  static const Color head = Color.fromRGBO(207, 73, 23, 1);
+  static const Color mainBox = Color.fromRGBO(249, 172, 61, 1);
+  static const Color otherBox = Color.fromRGBO(45, 117, 140, 1);
+  static const Color nav = Color.fromRGBO(117, 140, 51, 1);
+  static const Color background = Color.fromRGBO(255, 234, 202, 1);
+
+  static const Color head90s = Color.fromRGBO(231, 111, 81, 1);
+  static const Color mainBox90s = Color.fromRGBO(42, 157, 143, 1);
+  static const Color otherBox90s = Color.fromRGBO(38, 70, 83, 1);
+  static const Color nav90s = Color.fromRGBO(38, 70, 83, 1);
+  static const Color background90s = Color.fromRGBO(233, 196, 106, 1);
+
+  static const Color headSimple = Color.fromRGBO(230, 110, 94, 1);
+  static const Color mainBoxSimple = Color.fromRGBO(77, 217, 235, 1);
+  static const Color otherBoxSimple = Color.fromRGBO(45, 200, 221, 1);
+  static const Color navSimple = Color.fromRGBO(252, 203, 196, 1);
+  static const Color backgroundSimple = Color.fromRGBO(248, 244, 229, 1);
 }
