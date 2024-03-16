@@ -212,7 +212,7 @@ class _ExercisingPageState extends State<ExercisingPage> {
         final workoutData = {
           'exercises': exerciseData,
           'timestamp': FieldValue.serverTimestamp(),
-          //'exercises completed': '0'
+          'exercises completed': '0'
         };
 
         // Adding data to firebase database

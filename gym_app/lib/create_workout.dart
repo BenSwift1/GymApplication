@@ -172,6 +172,7 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
             ),
           ),
           ElevatedButton(
+            // Adding exercises to database
             onPressed: () async {
               final exercise = myController.text;
               if (workouts.containsKey(selectedWorkout)) {
@@ -184,86 +185,81 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
             },
             child: const Text('Add Exercise'),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.60,
-                    maxHeight: MediaQuery.of(context).size.height * 0.60,
-                  ),
-                  child: Card(
-                    color: const Color.fromRGBO(255, 202, 58, 1),
-                    child: ListView.builder(
-                      itemCount: workouts[selectedWorkout]?.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                workouts[selectedWorkout]![index],
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.remove),
-                                color: Color.fromARGB(255, 255, 255, 255),
-                                onPressed: () async {
-                                  final removedExercise =
-                                      workouts[selectedWorkout]![index];
-                                  setState(() {
-                                    workouts[selectedWorkout]!
-                                        .remove(removedExercise);
-                                  });
-                                  await saveRemovedWorkoutData(removedExercise);
-                                },
-                              ),
-                            ],
-                          ),
-                        );
+          Expanded(
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.35,
+                maxHeight: MediaQuery.of(context).size.height * 0.60,
+              ),
+              child: Card(
+                color: Color.fromRGBO(138, 201, 38, 1),
+                child: ListView.builder(
+                  itemCount: workouts.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedWorkout = workouts.keys.toList()[index];
+                        });
+                        print('Clicked on workout: $selectedWorkout');
                       },
-                    ),
-                  ),
+                      child: ListTile(
+                        title: Text(
+                          workouts.keys.toList()[index],
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.35,
-                    maxHeight: MediaQuery.of(context).size.height * 0.60,
-                  ),
-                  child: Card(
-                    color: Color.fromRGBO(138, 201, 38, 1),
-                    child: ListView.builder(
-                      itemCount: workouts.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedWorkout = workouts.keys.toList()[index];
-                            });
-                            print('Clicked on workout: $selectedWorkout');
-                          },
-                          child: ListTile(
-                            title: Text(
-                              workouts.keys.toList()[index],
-                              style: const TextStyle(
-                                color: Colors.white,
-                              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.60,
+                maxHeight: MediaQuery.of(context).size.height * 0.60,
+              ),
+              child: Card(
+                color: const Color.fromRGBO(255, 202, 58, 1),
+                child: ListView.builder(
+                  itemCount: workouts[selectedWorkout]?.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            workouts[selectedWorkout]![index],
+                            style: const TextStyle(
+                              color: Colors.white,
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  ),
+                          IconButton(
+                            icon: const Icon(Icons.remove),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            onPressed: () async {
+                              final removedExercise =
+                                  workouts[selectedWorkout]![index];
+                              setState(() {
+                                workouts[selectedWorkout]!
+                                    .remove(removedExercise);
+                              });
+                              await saveRemovedWorkoutData(removedExercise);
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
-            ],
+            ),
           ),
+          const SizedBox(width: 16),
         ],
       ),
     );

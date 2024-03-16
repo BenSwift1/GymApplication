@@ -41,34 +41,32 @@ class socialPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // TEXT BOX
-            ConstrainedBox(
-              constraints: BoxConstraints.expand(
-                  height: MediaQuery.of(context).size.height *
-                      0.10, // Getting size of screen and then making box 25% of the height of the specific screen
-                  width: MediaQuery.of(context).size.width * 0.85),
-              child: const Card(
-                color: Color.fromRGBO(255, 202, 58, 1),
-                child: Text(
-                  'Create workout',
-                  style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
-                ),
-              ),
+            const Padding(padding: EdgeInsets.only(top: 20)),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ElevatedButton(onPressed: null, child: Text("Add friends")),
+                SizedBox(width: 20),
+                ElevatedButton(onPressed: null, child: Text("Requests")),
+              ],
             ),
 
             // TEXT BOX
             ConstrainedBox(
               constraints: BoxConstraints.expand(
-                  height: MediaQuery.of(context).size.height * 0.50,
-                  width: MediaQuery.of(context).size.width * 0.85),
-              child: const Card(
-                color: Color.fromRGBO(138, 201, 38, 1),
-                child: Text(
-                  'Hello World!',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Futura',
-                    fontSize: 12,
+                height: MediaQuery.of(context).size.height * 0.50,
+                width: MediaQuery.of(context).size.width * 0.85,
+              ),
+              child: Card(
+                color: const Color.fromRGBO(138, 201, 38, 1),
+                child: const Center(
+                  child: Text(
+                    'Hello World!',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Futura',
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ),

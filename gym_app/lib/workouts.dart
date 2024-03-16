@@ -78,7 +78,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'WORKOUT Page',
+          'Workouts',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
@@ -90,49 +90,43 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              ElevatedButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CreateWorkouts()),
-                ),
-                child: Text('Create workout'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UnderwayWorkoutPage(),
+              Padding(
+                padding: EdgeInsets.only(top: 40),
+                child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CreateWorkouts()),
                   ),
+                  child: Text('Create workout'),
                 ),
-                child: Text('Start workout'),
               ),
-              ElevatedButton(
-                onPressed: null,
-                child: Text('Delete workout'),
+              Padding(
+                padding: EdgeInsets.only(top: 40),
+                child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UnderwayWorkoutPage(),
+                    ),
+                  ),
+                  child: Text('Start workout'),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 40),
+                child: ElevatedButton(
+                  onPressed: null,
+                  child: Text('Delete workout'),
+                ),
               ),
             ],
           ),
+
           SizedBox(height: 20), // Space between rows
           // Additional buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              ElevatedButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Login()),
-                ),
-                child: Text('Login'),
-              ),
-              ElevatedButton(
-                onPressed: null,
-                child: Text('Pull'),
-              ),
-              ElevatedButton(
-                onPressed: null,
-                child: Text('Legs'),
-              ),
-            ],
+            children: <Widget>[],
           ),
           SizedBox(height: 40), // Padding above
           // Dismissible widget for workout box so can switch between workout data
@@ -177,6 +171,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           style: TextStyle(color: Colors.white, fontSize: 20),
                           textAlign: TextAlign.center,
                         ),
+                    ElevatedButton(onPressed: null, child: Text("Shar workout"))
                   ],
                 ),
               ),
