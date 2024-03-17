@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_app/create_workout.dart';
 import 'package:gym_app/login.dart';
 import 'package:gym_app/underway_workout.dart';
+import 'package:gym_app/main.dart';
 
 class WorkoutsPage extends StatefulWidget {
   @override
@@ -28,9 +29,9 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         final userId = user.uid;
 
         QuerySnapshot workoutSnapshot = await FirebaseFirestore.instance
-            .collection('workouts')
+            .collection('workouts') // Workouts user has choice of
             .doc(userId)
-            .collection('completed_workouts')
+            .collection('completed_workouts') // Workouts the user has finished
             .get();
 
         if (workoutSnapshot.docs.isNotEmpty) {
@@ -79,10 +80,11 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
       appBar: AppBar(
         title: const Text(
           'Workouts',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
         ),
-        backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
+        backgroundColor: Colours.headSimple,
       ),
+      backgroundColor: Colours.backgroundSimple,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -141,14 +143,14 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
               }
             },
             background: Container(
-              color: const Color.fromARGB(255, 254, 183, 178),
+              color: Colours.mainBoxSimple,
               alignment: Alignment.centerRight,
               padding: EdgeInsets.symmetric(horizontal: 20),
             ),
             child: Container(
               width: 250,
               height: 400,
-              color: const Color.fromARGB(255, 193, 140, 136),
+              color: Colours.mainBoxSimple,
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -180,7 +182,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromRGBO(25, 130, 196, 1),
+        backgroundColor: Colours.navSimple,
         elevation: 0,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

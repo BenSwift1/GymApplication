@@ -5,7 +5,7 @@ import 'package:gym_app/workouts.dart';
 import 'package:gym_app/login.dart';
 import 'package:gym_app/progress.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 
 void main() async {
@@ -41,12 +41,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
-
+  int workoutsCompleted = 0;
   late Timer periodicTimer;
 
   @override
   void initState() {
     super.initState();
+
+    workoutCounter(FirebaseAuth.instance.currentUser!.uid);
 
     periodicTimer = Timer.periodic(
       const Duration(seconds: 3), // Timer called every 3 seconds to change text
@@ -54,9 +56,27 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           practiceText = (['Test 1', 'Test 2', 'Test 3', 'Test 4']
             ..shuffle()); // Gets random text from array
+          workoutCounter(FirebaseAuth.instance.currentUser!
+              .uid); // Updating amount of workouts completed
         });
       },
     );
+  }
+
+  // Counts how many workouts user has completed at stores in variable
+  Future<int> workoutCounter(String userId) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(userId)
+          .collection('completed_workouts')
+          .get();
+      workoutsCompleted = querySnapshot.size;
+      return querySnapshot.size;
+    } catch (e) {
+      print('Error counting completed workouts: $e');
+      return 0;
+    }
   }
 
   @override
@@ -120,10 +140,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: MediaQuery.of(context).size.height *
                       0.25, // Getting size of screen and then making box 25% of the height of the specific screen
                   width: MediaQuery.of(context).size.width * 0.85),
-              child: const Card(
+              child: Card(
                 color: Colours.mainBoxSimple,
                 child: Text(
-                  'Workouts completed: 0',
+                  'Workouts completed:  $workoutsCompleted',
                   style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
                 ),
               ),
