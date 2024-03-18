@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -164,6 +165,7 @@ class registerEmailState extends State<registerEmail> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _register();
+                    //storeEmailDB('bob');
                   }
                 },
                 child: const Text('Submit'),
@@ -188,6 +190,7 @@ class registerEmailState extends State<registerEmail> {
         setState(() {
           _userEmail = user.email!;
           _regMessage = "$_userEmail successfully registered";
+          storeEmailDB(_emailController.text.trim());
         });
       } else {
         setState(() {
@@ -311,5 +314,30 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
         _loginMessage = "Error logging in";
       });
     }
+  }
+}
+
+// Getting users email to store for friends functionality
+Future<void> storeEmailDB(String email) async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print('No user is currently signed in.');
+      return;
+    }
+    final userId = user.uid;
+
+    final DocumentReference docRef = FirebaseFirestore.instance
+        .collection('workouts')
+        .doc(userId)
+        .collection('data')
+        .doc('user_email');
+    await docRef.set(
+      {'email': email},
+    );
+
+    print('Email stored successfully in databse');
+  } catch (e) {
+    print('Error storing email: $e');
   }
 }

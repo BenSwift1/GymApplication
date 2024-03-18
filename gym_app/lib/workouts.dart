@@ -117,8 +117,15 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
               Padding(
                 padding: EdgeInsets.only(top: 40),
                 child: ElevatedButton(
-                  onPressed: null,
-                  child: Text('Delete workout'),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyLoginPage(
+                        title: 'Login',
+                      ),
+                    ),
+                  ),
+                  child: Text('Start workout'),
                 ),
               ),
             ],
