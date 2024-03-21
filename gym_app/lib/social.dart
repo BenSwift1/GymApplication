@@ -9,6 +9,10 @@ void main() {
 }
 
 class socialPage extends StatelessWidget {
+  final List<Map<String, dynamic>> workoutDetails;
+
+  socialPage({required this.workoutDetails});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,20 +79,22 @@ class socialPage extends StatelessWidget {
                 height: MediaQuery.of(context).size.height * 0.50,
                 width: MediaQuery.of(context).size.width * 0.85,
               ),
-              child: const Card(
+              child: Card(
                 color: Colours.mainBoxSimple,
-                child: Center(
-                  child: Text(
-                    'Shared workouts here',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Futura',
-                      fontSize: 20,
-                    ),
-                  ),
+                child: ListView.builder(
+                  itemCount: workoutDetails.length,
+                  itemBuilder: (context, index) {
+                    final exercise = workoutDetails[index]['exercise'];
+                    final reps = workoutDetails[index]['reps'];
+                    final weight = workoutDetails[index]['weight'];
+                    return ListTile(
+                      title: Text(
+                          'Exercise: $exercise\nReps: $reps, Weight: $weight\n'),
+                    );
+                  },
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -113,7 +119,7 @@ class AddFriendsPage extends StatelessWidget {
                   const InputDecoration(labelText: 'Enter friends email...'),
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () => readEmailDB(),
               child: Text('Add'),
             ),
           ],
@@ -190,5 +196,67 @@ class RequestsPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+// checks database to see if email user enters is attached to an account
+Future<void> checkEmailExists(String email) async {
+  try {
+    final QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('workouts').get();
+
+    print('Total user documents found: ${querySnapshot.docs.length}');
+
+    bool emailExists = false;
+
+    for (final QueryDocumentSnapshot userDoc in querySnapshot.docs) {
+      final data = userDoc.data() as Map<String, dynamic>;
+      final userEmail = data['email'] as String?;
+
+      print('Checking user document: ${userDoc.id}, Email: $userEmail');
+
+      if (userEmail == email) {
+        emailExists = true;
+        print('Email exists for user: ${userDoc.id}');
+        break;
+      }
+    }
+
+    if (!emailExists) {
+      print('Email does not exist for any user');
+    }
+  } catch (e) {
+    print('Error checking email existence: $e');
+  }
+}
+
+// Reads email of logged in user
+Future<void> readEmailDB() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print('No user signed in');
+      return;
+    }
+    final userId = user.uid;
+
+    final QuerySnapshot<Map<String, dynamic>> workoutsSnapshot =
+        await FirebaseFirestore.instance
+            .collection('workouts')
+            .doc(userId)
+            .collection('data')
+            .get();
+
+    // Loop through documents until there are no more documents left
+    for (final workoutDoc in workoutsSnapshot.docs) {
+      final email = workoutDoc.data()['email'] as String?;
+      if (email != null) {
+        print('Email retrieved successfully from database: $email');
+      } else {
+        print('Email field is null or empty for workout: ${workoutDoc.id}');
+      }
+    }
+  } catch (e) {
+    print('Error reading email: $e');
   }
 }

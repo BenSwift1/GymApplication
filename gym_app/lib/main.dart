@@ -181,7 +181,10 @@ class _MyHomePageState extends State<MyHomePage> {
         case 1:
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => socialPage()),
+            MaterialPageRoute(
+                builder: (context) => socialPage(
+                      workoutDetails: [],
+                    )),
           );
           break;
         case 2:

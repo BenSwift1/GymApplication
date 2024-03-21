@@ -322,7 +322,7 @@ Future<void> storeEmailDB(String email) async {
   try {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      print('No user is currently signed in.');
+      print('No user signed in');
       return;
     }
     final userId = user.uid;
@@ -330,7 +330,7 @@ Future<void> storeEmailDB(String email) async {
     final DocumentReference docRef = FirebaseFirestore.instance
         .collection('workouts')
         .doc(userId)
-        .collection('data')
+        .collection('data') // In its own sub collection
         .doc('user_email');
     await docRef.set(
       {'email': email},

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_app/create_workout.dart';
 import 'package:gym_app/login.dart';
+import 'package:gym_app/social.dart';
 import 'package:gym_app/underway_workout.dart';
 import 'package:gym_app/main.dart';
 
@@ -59,6 +60,19 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
       }
     } catch (e) {
       print('Error reading exercise data from database: $e');
+    }
+  }
+
+  // Sends workout to social page
+  void shareWorkout() {
+    if (allWorkouts.isNotEmpty && allWorkouts[workoutBox].isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              socialPage(workoutDetails: allWorkouts[workoutBox]),
+        ),
+      );
     }
   }
 
@@ -180,7 +194,8 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           style: TextStyle(color: Colors.white, fontSize: 20),
                           textAlign: TextAlign.center,
                         ),
-                    ElevatedButton(onPressed: null, child: Text("Shar workout"))
+                    ElevatedButton(
+                        onPressed: shareWorkout, child: Text("Share workout"))
                   ],
                 ),
               ),
@@ -212,3 +227,26 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     );
   }
 }
+
+/*Future<void> shareWorkoutBool() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userId = user.uid;
+
+      bool share = true;
+
+      // Adding data to firebase database
+      await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(userId)
+          .collection('completed_workouts')
+          .add({'share': share});
+
+      print('Workout data stored in database');
+    }
+  } catch (e) {
+    print('Error wririting exercise data to databse: $e');
+  }
+}
+*/
