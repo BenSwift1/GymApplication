@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_app/create_workout.dart';
 import 'package:gym_app/login.dart';
 import 'package:gym_app/social.dart';
+import 'package:gym_app/social_main.dart';
 import 'package:gym_app/underway_workout.dart';
 import 'package:gym_app/main.dart';
 
@@ -14,7 +15,13 @@ class WorkoutsPage extends StatefulWidget {
 
 class _WorkoutsPageState extends State<WorkoutsPage> {
   int workoutBox = 0;
-  List<String> workoutBoxes = ['Workout 1', 'Workout 2', 'Workout 3'];
+  List<String> workoutBoxes = [
+    'Workout 1',
+    'Workout 2',
+    'Workout 3',
+    'Workout 4',
+    'Workout 5'
+  ];
   List<List<Map<String, dynamic>>> allWorkouts = [];
 
   @override
@@ -76,6 +83,49 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     }
   }
 
+  /*Future<void> getSharedWorkouts() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final userId = user.uid;
+
+        QuerySnapshot workoutSnapshot = await FirebaseFirestore.instance
+            .collection('workouts')
+            .doc(userId)
+            .collection('completed_workouts')
+            .where('shared', isEqualTo: true) // Filter by shared workouts
+            .get();
+
+        if (workoutSnapshot.docs.isNotEmpty) {
+          List<Map<String, dynamic>> sharedWorkoutsData = []; // Flat list
+
+          workoutSnapshot.docs.forEach((DocumentSnapshot document) {
+            Map<String, dynamic> workoutData =
+                document.data() as Map<String, dynamic>;
+            List<dynamic> exercises = workoutData['exercises'];
+
+            exercises.forEach((exercise) {
+              sharedWorkoutsData.add(exercise as Map<String, dynamic>);
+            });
+          });
+
+          // Navigate to social page with shared workouts
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  socialPage(workoutDetails: sharedWorkoutsData),
+            ),
+          );
+        } else {
+          print('No shared workouts found');
+        }
+      }
+    } catch (e) {
+      print('Error fetching shared workouts: $e');
+    }
+  }*/
+
   void switchWorkoutForward() {
     setState(() {
       workoutBox = (workoutBox + 1) % workoutBoxes.length;
@@ -84,7 +134,10 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
 
   void switchWorkoutBackward() {
     setState(() {
-      workoutBox = (workoutBox - 1) % allWorkouts.length;
+      workoutBox = (workoutBox - 1) % workoutBoxes.length;
+      if (workoutBox < 0) {
+        workoutBox = workoutBoxes.length - 1;
+      }
     });
   }
 
@@ -134,9 +187,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MyLoginPage(
-                        title: 'Login',
-                      ),
+                      builder: (context) => socialPageMain(),
                     ),
                   ),
                   child: Text('Start workout'),
@@ -195,7 +246,8 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           textAlign: TextAlign.center,
                         ),
                     ElevatedButton(
-                        onPressed: shareWorkout, child: Text("Share workout"))
+                        onPressed: sharingWorkoutBool,
+                        child: Text("Share workout"))
                   ],
                 ),
               ),
@@ -228,25 +280,35 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
   }
 }
 
-/*Future<void> shareWorkoutBool() async {
+Future<void> sharingWorkoutBool() async {
   try {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final userId = user.uid;
 
-      bool share = true;
-
-      // Adding data to firebase database
-      await FirebaseFirestore.instance
+      QuerySnapshot workoutSnapshot = await FirebaseFirestore.instance
           .collection('workouts')
           .doc(userId)
           .collection('completed_workouts')
-          .add({'share': share});
+          .get();
 
-      print('Workout data stored in database');
+      if (workoutSnapshot.docs.isNotEmpty) {
+        for (DocumentSnapshot document in workoutSnapshot.docs) {
+          Map<String, dynamic> workoutData =
+              document.data() as Map<String, dynamic>;
+          bool shared = workoutData['shared'] ?? false;
+
+          // Setting bool true
+          if (!shared) {
+            await document.reference.update({'shared': true});
+            print("Bool set to true");
+          }
+        }
+      } else {
+        print('Bool couldnt be set to true');
+      }
     }
   } catch (e) {
-    print('Error wririting exercise data to databse: $e');
+    print('Error: $e');
   }
 }
-*/

@@ -212,7 +212,8 @@ class _ExercisingPageState extends State<ExercisingPage> {
         final workoutData = {
           'exercises': exerciseData,
           'timestamp': FieldValue.serverTimestamp(),
-          'exercises completed': '0'
+          'exercises completed': '0',
+          'shared': false // Added boolean field with initial value false
         };
 
         // Adding data to firebase database
@@ -225,7 +226,7 @@ class _ExercisingPageState extends State<ExercisingPage> {
         print('Workout data stored in database');
       }
     } catch (e) {
-      print('Error wririting exercise data to databse: $e');
+      print('Error writing exercise data to database: $e');
     }
   }
 

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app/main.dart';
+import 'package:gym_app/workouts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_app/workouts.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
+// Inside the socialPage widget
 
 class socialPage extends StatelessWidget {
   final List<Map<String, dynamic>> workoutDetails;
@@ -15,6 +19,9 @@ class socialPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Print workoutDetails to the console
+    print('Workout Details: $workoutDetails');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -30,17 +37,17 @@ class socialPage extends StatelessWidget {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.call,
+              Icons.home,
               color: Colors.white,
             ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.camera),
+            icon: Icon(Icons.chat),
             label: 'Social',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
+            icon: Icon(Icons.phone),
             label: 'Workouts',
           ),
         ],
@@ -50,30 +57,6 @@ class socialPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Padding(padding: EdgeInsets.only(top: 20)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddFriendsPage()),
-                    );
-                  },
-                  child: Text("Add friends"),
-                ),
-                SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => RequestsPage()),
-                    );
-                  },
-                  child: Text("Requests"),
-                ),
-              ],
-            ),
             ConstrainedBox(
               constraints: BoxConstraints.expand(
                 height: MediaQuery.of(context).size.height * 0.50,
@@ -84,12 +67,11 @@ class socialPage extends StatelessWidget {
                 child: ListView.builder(
                   itemCount: workoutDetails.length,
                   itemBuilder: (context, index) {
-                    final exercise = workoutDetails[index]['exercise'];
-                    final reps = workoutDetails[index]['reps'];
-                    final weight = workoutDetails[index]['weight'];
+                    final workout = workoutDetails[index];
                     return ListTile(
-                      title: Text(
-                          'Exercise: $exercise\nReps: $reps, Weight: $weight\n'),
+                      title: Text(workout['title']),
+                      subtitle: Text(workout['description']),
+                      // You can display more workout details here
                     );
                   },
                 ),
