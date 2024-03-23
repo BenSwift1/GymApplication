@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'My App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: socialPageMain(),
+    );
+  }
 }
 
 class socialPageMain extends StatefulWidget {
@@ -28,7 +41,6 @@ class _socialPageMainState extends State<socialPageMain> {
       if (user != null) {
         final userId = user.uid;
 
-        // When user clicks share workout that workout is got here
         QuerySnapshot workoutSnapshot = await FirebaseFirestore.instance
             .collection('workouts')
             .doc(userId)
@@ -68,9 +80,8 @@ class _socialPageMainState extends State<socialPageMain> {
           'Social',
           style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
         ),
-        backgroundColor: Colours.headSimple,
+        backgroundColor: Colors.blue,
       ),
-      backgroundColor: Colours.backgroundSimple,
       body: Column(
         children: [
           Padding(
@@ -106,7 +117,7 @@ class _socialPageMainState extends State<socialPageMain> {
                     itemBuilder: (context, index) {
                       final workoutBox = allWorkouts[index];
                       return Card(
-                        color: Colours.mainBoxSimple,
+                        color: Colors.blue,
                         elevation: 8,
                         margin: EdgeInsets.all(16),
                         child: Padding(
@@ -160,8 +171,15 @@ class _socialPageMainState extends State<socialPageMain> {
   }
 }
 
-// Where user adds friends
-class AddFriendsPage extends StatelessWidget {
+class AddFriendsPage extends StatefulWidget {
+  @override
+  _AddFriendsPageState createState() => _AddFriendsPageState();
+}
+
+class _AddFriendsPageState extends State<AddFriendsPage> {
+  TextEditingController _emailController = TextEditingController();
+  bool _emailExists = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,35 +191,106 @@ class AddFriendsPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextFormField(
+              controller: _emailController,
               decoration:
-                  const InputDecoration(labelText: 'Enter friends email...'),
+                  InputDecoration(labelText: 'Enter friend\'s email...'),
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                String email =
+                    _emailController.text.trim(); // Getting email user entered
+                bool exists =
+                    await checkIfEmailExists(email); // Checking that email
+                addFriend(
+                    email); // If exists adding that email to list of friends
+                setState(() {
+                  _emailExists = exists;
+                });
+              },
               child: Text('Add'),
             ),
+            if (_emailExists)
+              Text(
+                'Friend added',
+                style:
+                    TextStyle(color: const Color.fromARGB(255, 76, 116, 175)),
+              ),
           ],
         ),
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
 }
 
-// Where user manages friend requests
+Future<bool> checkIfEmailExists(String email) async {
+  try {
+    // Looking for matching email
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .limit(1) // Stopping once found
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  } catch (e) {
+    // Handle any errors
+    print('Error checking email existence: $e');
+    return false;
+  }
+}
+
+Future<void> addFriend(String email) async {
+  try {
+    // Checking email exists before adding friend
+    bool emailExists = await checkIfEmailExists(email);
+
+    if (emailExists) {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        print('No user signed in');
+        return;
+      }
+
+      final currentUserDocRef =
+          FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
+
+      // Adding email to list of friends
+      await currentUserDocRef.update({
+        'friends': FieldValue.arrayUnion([email])
+      });
+
+      // Updating database under friends field in user collection
+      final friendDocSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+      final friendDocRef = friendDocSnapshot.docs.first.reference;
+      await friendDocRef.update({
+        'friends': FieldValue.arrayUnion([currentUser.email])
+      });
+
+      print('Friend added successfully');
+    } else {
+      print('This user doesnt exist');
+    }
+  } catch (e) {
+    print('Error adding friend: $e');
+  }
+}
+
 class RequestsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Friend Requests',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontFamily: 'Futura',
-            )),
-        backgroundColor: Colours.headSimple,
+        title: const Text('Friend Requests'),
       ),
-      backgroundColor: Colours.backgroundSimple,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -237,7 +326,7 @@ class RequestsPage extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.85,
               ),
               child: const Card(
-                color: Colours.mainBoxSimple,
+                color: Colors.blue,
                 child: Center(
                   child: Text(
                     'Username1',

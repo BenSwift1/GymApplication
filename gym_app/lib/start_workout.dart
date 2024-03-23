@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gym_app/main.dart';
 import 'package:gym_app/workouts.dart';
 import 'package:gym_app/underway_workout.dart';
 
@@ -54,7 +55,7 @@ class _StartWorkoutPageState extends State<startWorkoutPage> {
           'Start workout',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
+        backgroundColor: Colours.headSimple,
       ),
       body: Center(
         child: Column(
@@ -71,7 +72,7 @@ class _StartWorkoutPageState extends State<startWorkoutPage> {
                   width: MediaQuery.of(context).size.width * 0.70),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.red,
+                  color: Colours.mainBoxSimple,
                   borderRadius: BorderRadius.circular(5.0),
                 ),
                 child: ListView.builder(

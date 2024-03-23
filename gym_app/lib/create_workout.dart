@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_app/main.dart';
 
 void main() {
   runApp(const MyApp());
@@ -159,7 +160,7 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
           'Create Workouts',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: const Color.fromRGBO(255, 89, 94, 1),
+        backgroundColor: Colours.headSimple,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -192,7 +193,7 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
                 maxHeight: MediaQuery.of(context).size.height * 0.60,
               ),
               child: Card(
-                color: Color.fromRGBO(138, 201, 38, 1),
+                color: Colours.mainBoxSimple,
                 child: ListView.builder(
                   itemCount: workouts.length,
                   itemBuilder: (context, index) {
@@ -224,7 +225,7 @@ class _CreateWorkoutsState extends State<CreateWorkouts> {
                 maxHeight: MediaQuery.of(context).size.height * 0.60,
               ),
               child: Card(
-                color: const Color.fromRGBO(255, 202, 58, 1),
+                color: Colours.otherBoxSimple,
                 child: ListView.builder(
                   itemCount: workouts[selectedWorkout]?.length,
                   itemBuilder: (context, index) {

@@ -327,16 +327,12 @@ Future<void> storeEmailDB(String email) async {
     }
     final userId = user.uid;
 
-    final DocumentReference docRef = FirebaseFirestore.instance
-        .collection('workouts')
-        .doc(userId)
-        .collection('data') // In its own sub collection
-        .doc('user_email');
-    await docRef.set(
-      {'email': email},
-    );
+    // Storing email in a new collection called users
+    final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+    // Adding email to users collection
+    await usersCollectionRef.doc(userId).set({'email': email});
 
-    print('Email stored successfully in databse');
+    print('Email stored successfully in database');
   } catch (e) {
     print('Error storing email: $e');
   }

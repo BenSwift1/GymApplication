@@ -4,6 +4,7 @@ import 'package:gym_app/social.dart';
 import 'package:gym_app/workouts.dart';
 import 'package:gym_app/login.dart';
 import 'package:gym_app/progress.dart';
+import 'package:gym_app/social_main.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
@@ -181,10 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
         case 1:
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => socialPage(
-                      workoutDetails: [],
-                    )),
+            MaterialPageRoute(builder: (context) => socialPageMain()),
           );
           break;
         case 2:
