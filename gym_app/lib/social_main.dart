@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
 }
 
 class socialPageMain extends StatefulWidget {
+  // Called this because it replaces socialPage which wasnt working correctly
   @override
   _socialPageMainState createState() => _socialPageMainState();
 }
@@ -36,37 +37,94 @@ class _socialPageMainState extends State<socialPageMain> {
     getWorkoutData();
   }
 
+  // Getting users friends email to then get their ID
+  Future<String?> getEmailAndID(String email) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.id; // Returning doc ID
+      }
+    } catch (e) {
+      print("Error getting user ID by email: $e");
+    }
+    return null;
+  }
+
+  // Getting both user and users friends workouts, to be displayed on social page later
   Future<void> getWorkoutData() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         final userId = user.uid;
 
-        QuerySnapshot workoutSnapshot = await FirebaseFirestore.instance
-            .collection('workouts')
+        // Getting workouts user has shared from user collection
+        QuerySnapshot userWorkoutSnapshot = await FirebaseFirestore.instance
+            .collection('users')
             .doc(userId)
-            .collection('completed_workouts')
-            .where('shared', isEqualTo: true)
+            .collection('shared_workouts')
             .get();
 
-        if (workoutSnapshot.docs.isNotEmpty) {
-          List<List<Map<String, dynamic>>> allWorkoutsData = [];
+        // Getting users friend IDs
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
 
-          for (var doc in workoutSnapshot.docs) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+        List<dynamic> friendIds =
+            userData['friends'] ?? []; // Kaing sure not null
+        print(friendIds); // Checking friends
+        List<QuerySnapshot> friendWorkoutSnapshots = [];
+
+        // Getting shared workouts from each of users friends
+        for (var friendEmail in friendIds) {
+          // Getting a users shared workout then looping for each friend
+          String? friendUserId = await getEmailAndID(friendEmail);
+          if (friendUserId != null) {
+            QuerySnapshot friendSnapshot = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(friendUserId)
+                .collection('shared_workouts')
+                .get();
+            friendWorkoutSnapshots.add(friendSnapshot);
+          }
+        }
+
+        // All workout data stored in one map. Logged in user and friends
+        List<List<Map<String, dynamic>>> allWorkoutsData = [];
+
+        // Add users shared workouts
+        for (var doc in userWorkoutSnapshot.docs) {
+          var workoutData = doc.data() as Map<String, dynamic>;
+          if (workoutData.containsKey('workoutDetails')) {
+            List<Map<String, dynamic>> exercisesList =
+                List<Map<String, dynamic>>.from(workoutData['workoutDetails']);
+            allWorkoutsData.add(exercisesList);
+          }
+        }
+
+        // Add shared workouts from friends
+        for (var snapshot in friendWorkoutSnapshots) {
+          for (var doc in snapshot.docs) {
             var workoutData = doc.data() as Map<String, dynamic>;
-            if (workoutData.containsKey('exercises')) {
+            if (workoutData.containsKey('workoutDetails')) {
               List<Map<String, dynamic>> exercisesList =
-                  List<Map<String, dynamic>>.from(workoutData['exercises']);
-              allWorkoutsData.add(exercisesList);
+                  List<Map<String, dynamic>>.from(
+                      workoutData['workoutDetails']);
+              allWorkoutsData.add(
+                  exercisesList); // Adding friends workouts to allWorkoutData
             }
           }
-
-          setState(() {
-            allWorkouts = allWorkoutsData;
-          });
-        } else {
-          print('No shared workouts found');
         }
+
+        setState(() {
+          allWorkouts = allWorkoutsData;
+        });
       }
     } catch (e) {
       print('Error reading exercise data from database: $e');
@@ -139,7 +197,7 @@ class _socialPageMainState extends State<socialPageMain> {
                               SizedBox(height: 10),
                               ListView.builder(
                                 shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: workoutBox.length,
                                 itemBuilder: (context, idx) {
                                   final details = workoutBox[idx];
