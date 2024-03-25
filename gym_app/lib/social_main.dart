@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_app/main.dart';
 
 void main() {
   runApp(const MyApp());
@@ -80,8 +81,9 @@ class _socialPageMainState extends State<socialPageMain> {
           'Social',
           style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colours.headSimple,
       ),
+      backgroundColor: Colours.backgroundSimple,
       body: Column(
         children: [
           Padding(
@@ -117,7 +119,7 @@ class _socialPageMainState extends State<socialPageMain> {
                     itemBuilder: (context, index) {
                       final workoutBox = allWorkouts[index];
                       return Card(
-                        color: Colors.blue,
+                        color: Colours.mainBoxSimple,
                         elevation: 8,
                         margin: EdgeInsets.all(16),
                         child: Padding(
@@ -265,7 +267,7 @@ Future<void> addFriend(String email) async {
         'friends': FieldValue.arrayUnion([email])
       });
 
-      // Updating database under friends field in user collection
+      // Updating database
       final friendDocSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('email', isEqualTo: email)
@@ -326,7 +328,7 @@ class RequestsPage extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.85,
               ),
               child: const Card(
-                color: Colors.blue,
+                color: Colours.mainBoxSimple,
                 child: Center(
                   child: Text(
                     'Username1',

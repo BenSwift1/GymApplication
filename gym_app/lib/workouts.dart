@@ -70,6 +70,39 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     }
   }
 
+  Future<void> shareWorkoutToFriends() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print('User is not signed in.');
+      return;
+    }
+
+    if (allWorkouts.isNotEmpty && allWorkouts[workoutBox].isNotEmpty) {
+      final userId = user.uid;
+      final workoutDetails = allWorkouts[workoutBox];
+
+      final workoutId = DateTime.now().millisecondsSinceEpoch.toString();
+
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('shared_workouts')
+            .doc(workoutId)
+            .set({
+          'workoutId': workoutId,
+          'workoutDetails': workoutDetails,
+        });
+        sharingWorkoutBool();
+        print('Workout shared successfully.');
+      } catch (e) {
+        print('Error sharing workout: $e');
+      }
+    } else {
+      print('No workout to share or workout details are empty.');
+    }
+  }
+
   // Sends workout to social page
   void shareWorkout() {
     if (allWorkouts.isNotEmpty && allWorkouts[workoutBox].isNotEmpty) {
@@ -82,49 +115,6 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
       );
     }
   }
-
-  /*Future<void> getSharedWorkouts() async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final userId = user.uid;
-
-        QuerySnapshot workoutSnapshot = await FirebaseFirestore.instance
-            .collection('workouts')
-            .doc(userId)
-            .collection('completed_workouts')
-            .where('shared', isEqualTo: true) // Filter by shared workouts
-            .get();
-
-        if (workoutSnapshot.docs.isNotEmpty) {
-          List<Map<String, dynamic>> sharedWorkoutsData = []; // Flat list
-
-          workoutSnapshot.docs.forEach((DocumentSnapshot document) {
-            Map<String, dynamic> workoutData =
-                document.data() as Map<String, dynamic>;
-            List<dynamic> exercises = workoutData['exercises'];
-
-            exercises.forEach((exercise) {
-              sharedWorkoutsData.add(exercise as Map<String, dynamic>);
-            });
-          });
-
-          // Navigate to social page with shared workouts
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  socialPage(workoutDetails: sharedWorkoutsData),
-            ),
-          );
-        } else {
-          print('No shared workouts found');
-        }
-      }
-    } catch (e) {
-      print('Error fetching shared workouts: $e');
-    }
-  }*/
 
   void switchWorkoutForward() {
     setState(() {
@@ -246,7 +236,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           textAlign: TextAlign.center,
                         ),
                     ElevatedButton(
-                        onPressed: sharingWorkoutBool,
+                        onPressed: shareWorkoutToFriends,
                         child: Text("Share workout"))
                   ],
                 ),
