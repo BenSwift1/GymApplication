@@ -39,6 +39,8 @@ dependencies:
   firebase_storage: ^11.6.6
   firebase_dynamic_links: ^5.4.14
   cloud_firestore: ^4.15.5
+  fl_chart: ^0.66.2
+
 
 dev_dependencies:
   flutter_test:

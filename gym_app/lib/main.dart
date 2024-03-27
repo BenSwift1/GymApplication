@@ -8,6 +8,7 @@ import 'package:gym_app/social_main.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
+import 'package:fl_chart/fl_chart.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +28,58 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: MyLoginPage(title: 'Login'),
+    );
+  }
+}
+
+// Creating a graph showing users reps over days
+class displayingGraph extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      child: FutureBuilder<List<Map<DateTime, int>>>(
+        future: countingUserReps(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final data = snapshot.data ?? [];
+            return LineChart(
+              LineChartData(
+                minX: // Setting it so table is over days. X axis is days of the month
+                    data.isNotEmpty ? data.first.keys.first.day.toDouble() : 0,
+                maxX: data.isNotEmpty ? data.last.keys.first.day.toDouble() : 0,
+                minY: 0,
+                maxY: data
+                        .isNotEmpty // If reps isnt empty the max number is set to highest amount of reps
+                    ? data
+                        .map((e) => e.values.first)
+                        .reduce((a, b) => a > b ? a : b)
+                        .toDouble()
+                    : 0,
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: data
+                        .map((entry) => FlSpot(entry.keys.first.day.toDouble(),
+                            entry.values.first.toDouble()))
+                        .toList(),
+                    isCurved: false,
+                    color: Colours.headSimple,
+                  ),
+                ],
+                titlesData: const FlTitlesData(
+                  show: true,
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
@@ -156,15 +209,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: MediaQuery.of(context).size.height * 0.40,
                   width: MediaQuery.of(context).size.width * 0.85),
               child: Card(
-                color: Colours.otherBoxSimple,
-                child: Text(
-                  practiceText.first,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Futura',
-                    fontSize: 12,
-                  ),
-                ),
+                color: Colours.mainBoxSimple,
+                child: displayingGraph(), // Displaying graph in box
               ),
             )
           ],
@@ -220,4 +266,44 @@ class Colours {
   static const Color otherBoxSimple = Color.fromRGBO(45, 200, 221, 1);
   static const Color navSimple = Color.fromRGBO(252, 203, 196, 1);
   static const Color backgroundSimple = Color.fromRGBO(248, 244, 229, 1);
+}
+
+Future<List<Map<DateTime, int>>> countingUserReps() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userId = user.uid;
+
+      final completedWorkoutsSnapshot = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(userId)
+          .collection('completed_workouts')
+          .get();
+
+      List<Map<DateTime, int>> data = [];
+
+      // For every completed workout a user has, accessing the reps
+      completedWorkoutsSnapshot.docs.forEach((doc) {
+        final timestamp = (doc['timestamp'] as Timestamp).toDate();
+        final exercises = doc['exercises'] as List<dynamic>;
+        int totalReps = 0;
+        exercises.forEach((exercise) {
+          final reps = exercise['reps'] as String;
+          totalReps += int.tryParse(reps) ?? 0;
+        });
+        data.add({
+          timestamp: totalReps
+        }); // Getting timestamp of when reps were complted
+      });
+
+      // Sorting data
+      data.sort((a, b) => a.keys.first.compareTo(b.keys.first));
+
+      return data;
+    }
+  } catch (e) {
+    print('Reps eror $e');
+  }
+
+  return [];
 }
