@@ -16,6 +16,8 @@ void main() async {
   runApp(MyApp());
 }
 
+int totalReppMain = 0;
+int totalSetsMain = 0;
 List<String> practiceText = ['Test'];
 
 class MyApp extends StatelessWidget {
@@ -39,6 +41,57 @@ class displayingGraph extends StatelessWidget {
     return SizedBox(
       child: FutureBuilder<List<Map<DateTime, int>>>(
         future: countingUserReps(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final data = snapshot.data ?? [];
+            return LineChart(
+              LineChartData(
+                minX: // Setting it so table is over days. X axis is days of the month
+                    data.isNotEmpty ? data.first.keys.first.day.toDouble() : 0,
+                maxX: data.isNotEmpty ? data.last.keys.first.day.toDouble() : 0,
+                minY: 0,
+                maxY: data
+                        .isNotEmpty // If reps isnt empty the max number is set to highest amount of reps
+                    ? data
+                        .map((e) => e.values.first)
+                        .reduce((a, b) => a > b ? a : b)
+                        .toDouble()
+                    : 0,
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: data
+                        .map((entry) => FlSpot(entry.keys.first.day.toDouble(),
+                            entry.values.first.toDouble()))
+                        .toList(),
+                    isCurved: false,
+                    color: Colours.headSimple,
+                  ),
+                ],
+                titlesData: const FlTitlesData(
+                  show: true,
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+class displayingSetsGraph extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      child: FutureBuilder<List<Map<DateTime, int>>>(
+        future: countingUserSets(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -197,7 +250,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Card(
                 color: Colours.mainBoxSimple,
                 child: Text(
-                  'Workouts completed:  $workoutsCompleted',
+                  'Workouts completed:  $workoutsCompleted\n Reps completed: $totalReppMain\nSets completed: $totalSetsMain\nWeight lifted:',
                   style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
                 ),
               ),
@@ -290,6 +343,7 @@ Future<List<Map<DateTime, int>>> countingUserReps() async {
         exercises.forEach((exercise) {
           final reps = exercise['reps'] as String;
           totalReps += int.tryParse(reps) ?? 0;
+          totalReppMain = totalReps;
         });
         data.add({
           timestamp: totalReps
@@ -303,6 +357,47 @@ Future<List<Map<DateTime, int>>> countingUserReps() async {
     }
   } catch (e) {
     print('Reps eror $e');
+  }
+
+  return [];
+}
+
+Future<List<Map<DateTime, int>>> countingUserSets() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userId = user.uid;
+
+      final completedWorkoutsSnapshot = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(userId)
+          .collection('completed_workouts')
+          .get();
+
+      List<Map<DateTime, int>> data = [];
+
+      // For every completed workout a user has, accessing the sets
+      completedWorkoutsSnapshot.docs.forEach((doc) {
+        final timestamp = (doc['timestamp'] as Timestamp).toDate();
+        final exercises = doc['exercises'] as List<dynamic>;
+        int totalSets = 0;
+        exercises.forEach((exercise) {
+          final reps = exercise['sets'] as String;
+          totalSets += int.tryParse(reps) ?? 0;
+          totalSetsMain = totalSets;
+        });
+        data.add({
+          timestamp: totalSets
+        }); // Getting timestamp of when reps were complted
+      });
+
+      // Sorting data
+      data.sort((a, b) => a.keys.first.compareTo(b.keys.first));
+
+      return data;
+    }
+  } catch (e) {
+    print('Sets error $e');
   }
 
   return [];
