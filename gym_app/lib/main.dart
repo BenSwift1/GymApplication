@@ -18,6 +18,7 @@ void main() async {
 
 int totalReppMain = 0;
 int totalSetsMain = 0;
+int weeksConsecutive = 0;
 List<String> practiceText = ['Test'];
 
 class MyApp extends StatelessWidget {
@@ -157,6 +158,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
     workoutCounter(FirebaseAuth.instance.currentUser!.uid);
 
+    consecDays(FirebaseAuth.instance.currentUser!.uid).then((consecutiveWeeks) {
+      setState(() {
+        weeksConsecutive = consecutiveWeeks;
+      });
+    });
+
     periodicTimer = Timer.periodic(
       const Duration(seconds: 3), // Timer called every 3 seconds to change text
       (timer) {
@@ -250,7 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Card(
                 color: Colours.mainBoxSimple,
                 child: Text(
-                  'Workouts completed:  $workoutsCompleted\n Reps completed: $totalReppMain\nSets completed: $totalSetsMain\nWeight lifted:',
+                  'Workouts completed:  $workoutsCompleted\n Reps completed: $totalReppMain\nSets completed: $totalSetsMain\nWeight lifted: \nConsec days: $weeksConsecutive',
                   style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
                 ),
               ),
@@ -319,6 +326,49 @@ class Colours {
   static const Color otherBoxSimple = Color.fromRGBO(45, 200, 221, 1);
   static const Color navSimple = Color.fromRGBO(252, 203, 196, 1);
   static const Color backgroundSimple = Color.fromRGBO(248, 244, 229, 1);
+}
+
+Future<int> consecDays(String userId) async {
+  try {
+    final completedWorkoutsSnapshot = await FirebaseFirestore.instance
+        .collection('workouts')
+        .doc(userId)
+        .collection('completed_workouts')
+        .orderBy(
+            'timestamp') // Getting time workouts were completed of user logged in
+        .get();
+
+    // If they havent completed any workouts yet
+    if (completedWorkoutsSnapshot.docs.isEmpty) {
+      return 0;
+    }
+
+    // Storing in workout dates
+    List<DateTime> workoutDates = completedWorkoutsSnapshot.docs.map((doc) {
+      final timestamp = (doc['timestamp'] as Timestamp).toDate();
+      return timestamp;
+    }).toList();
+
+    // Initialize variables
+    int consecDaysNum = 0;
+    DateTime? lastDate;
+
+    // For every workout
+    for (var date in workoutDates) {
+      // Works out difference of last date workout was completed and current date
+      if (lastDate?.difference(date).inDays.abs() == 1) {
+        consecDaysNum++;
+      } else {
+        break;
+      }
+      lastDate = date;
+    }
+
+    return consecDaysNum;
+  } catch (e) {
+    print("Error calculating consecutive days: $e");
+    return 0;
+  }
 }
 
 Future<List<Map<DateTime, int>>> countingUserReps() async {

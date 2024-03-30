@@ -210,8 +210,8 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
               padding: EdgeInsets.symmetric(horizontal: 20),
             ),
             child: Container(
-              width: 250,
-              height: 400,
+              width: 280,
+              height: 420,
               color: Colours.mainBoxSimple,
               child: Center(
                 child: Column(
@@ -225,19 +225,30 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                         fontSize: 30,
                       ),
                     ),
-                    SizedBox(height: 10),
-                    // Getting workouts from firebase and putting in box
-                    if (allWorkouts.isNotEmpty &&
-                        allWorkouts[workoutBox].isNotEmpty)
-                      for (var details in allWorkouts[workoutBox])
-                        Text(
-                          'Exercise: ${details['exercise']}\nReps: ${details['reps']}, Weight: ${details['weight']}\n',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                          textAlign: TextAlign.center,
+                    SizedBox(height: 6),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: [
+                            // Getting workouts from firebase and putting in box
+                            if (allWorkouts.isNotEmpty &&
+                                allWorkouts[workoutBox].isNotEmpty)
+                              for (var details in allWorkouts[workoutBox])
+                                Text(
+                                  'Exercise: ${details['exercise']}\nReps: ${details['reps']}, Weight: ${details['weight']}, Sets: ${details['sets']}\n',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                  textAlign: TextAlign.center,
+                                ),
+                          ],
                         ),
+                      ),
+                    ),
                     ElevatedButton(
-                        onPressed: shareWorkoutToFriends,
-                        child: Text("Share workout"))
+                      onPressed: shareWorkoutToFriends,
+                      child: Text("Share workout"),
+                    )
                   ],
                 ),
               ),
