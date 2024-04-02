@@ -281,6 +281,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
   }
 }
 
+// Using a boolean to track wether workout should be shared or not
 Future<void> sharingWorkoutBool() async {
   try {
     final user = FirebaseAuth.instance.currentUser;

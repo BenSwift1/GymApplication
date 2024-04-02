@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_app/login.dart';
 import 'package:gym_app/main.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'My App',
+      title: 'Swift',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -30,6 +31,7 @@ class socialPageMain extends StatefulWidget {
 
 class _socialPageMainState extends State<socialPageMain> {
   List<List<Map<String, dynamic>>> allWorkouts = [];
+  String? userEmail;
 
   @override
   void initState() {
@@ -61,6 +63,16 @@ class _socialPageMainState extends State<socialPageMain> {
       if (user != null) {
         final userId = user.uid;
 
+        // Start of etting user email to be displayed later
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
+
+        // Storing user email in a variable
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        userEmail = userData['email'];
+
         // Getting workouts user has shared from user collection
         QuerySnapshot userWorkoutSnapshot = await FirebaseFirestore.instance
             .collection('users')
@@ -68,22 +80,19 @@ class _socialPageMainState extends State<socialPageMain> {
             .collection('shared_workouts')
             .get();
 
+        List<String> usersEmails = []; // Storing users emails in list
+
+        // Adding those email to the list
+        usersEmails.addAll(List.filled(userWorkoutSnapshot.size, userEmail!));
+
         // Getting users friend IDs
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .get();
-
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-
         List<dynamic> friendIds =
-            userData['friends'] ?? []; // Kaing sure not null
+            userData['friends'] ?? []; // Making sure not null
         print(friendIds); // Checking friends
-        List<QuerySnapshot> friendWorkoutSnapshots = [];
 
         // Getting shared workouts from each of users friends
         for (var friendEmail in friendIds) {
-          // Getting a users shared workout then looping for each friend
+          // Getting a user's shared workout then looping for each friend
           String? friendUserId = await getEmailAndID(friendEmail);
           if (friendUserId != null) {
             QuerySnapshot friendSnapshot = await FirebaseFirestore.instance
@@ -91,7 +100,9 @@ class _socialPageMainState extends State<socialPageMain> {
                 .doc(friendUserId)
                 .collection('shared_workouts')
                 .get();
-            friendWorkoutSnapshots.add(friendSnapshot);
+
+            // Adding friends email to the list for the workouts theyve shared
+            usersEmails.addAll(List.filled(friendSnapshot.size, friendEmail));
           }
         }
 
@@ -99,25 +110,46 @@ class _socialPageMainState extends State<socialPageMain> {
         List<List<Map<String, dynamic>>> allWorkoutsData = [];
 
         // Add users shared workouts
-        for (var doc in userWorkoutSnapshot.docs) {
+        for (var docIndex = 0;
+            docIndex < userWorkoutSnapshot.docs.length;
+            docIndex++) {
+          var doc = userWorkoutSnapshot.docs[docIndex];
           var workoutData = doc.data() as Map<String, dynamic>;
           if (workoutData.containsKey('workoutDetails')) {
             List<Map<String, dynamic>> exercisesList =
                 List<Map<String, dynamic>>.from(workoutData['workoutDetails']);
+            // Adding the users email to their workouts to later be shared
+            exercisesList.forEach((exercise) {
+              exercise['usersEmailShared'] = usersEmails[docIndex];
+            });
             allWorkoutsData.add(exercisesList);
           }
         }
 
         // Add shared workouts from friends
-        for (var snapshot in friendWorkoutSnapshots) {
-          for (var doc in snapshot.docs) {
-            var workoutData = doc.data() as Map<String, dynamic>;
-            if (workoutData.containsKey('workoutDetails')) {
-              List<Map<String, dynamic>> exercisesList =
-                  List<Map<String, dynamic>>.from(
-                      workoutData['workoutDetails']);
-              allWorkoutsData.add(
-                  exercisesList); // Adding friends workouts to allWorkoutData
+        for (var friendEmail in friendIds) {
+          // Getting a user's shared workout then looping for each friend
+          String? friendUserId = await getEmailAndID(friendEmail);
+          if (friendUserId != null) {
+            QuerySnapshot friendSnapshot = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(friendUserId)
+                .collection('shared_workouts')
+                .get();
+
+            for (var doc in friendSnapshot.docs) {
+              var workoutData = doc.data() as Map<String, dynamic>;
+              if (workoutData.containsKey('workoutDetails')) {
+                List<Map<String, dynamic>> exercisesList =
+                    List<Map<String, dynamic>>.from(
+                        workoutData['workoutDetails']);
+                // Associate each workout with the corresponding email
+                exercisesList.forEach((exercise) {
+                  exercise['usersEmailShared'] =
+                      friendEmail; // Getting email of the user whos workout is shared
+                });
+                allWorkoutsData.add(exercisesList);
+              }
             }
           }
         }
@@ -141,7 +173,6 @@ class _socialPageMainState extends State<socialPageMain> {
         ),
         backgroundColor: Colours.headSimple,
       ),
-      backgroundColor: Colours.backgroundSimple,
       body: Column(
         children: [
           Padding(
@@ -150,6 +181,7 @@ class _socialPageMainState extends State<socialPageMain> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
+                  // Add friends page
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -159,10 +191,14 @@ class _socialPageMainState extends State<socialPageMain> {
                   child: Text("Add Friends"),
                 ),
                 ElevatedButton(
+                  // Requests page (not yet implemented - currentnly log out page)
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => RequestsPage()),
+                      MaterialPageRoute(
+                          builder: (context) => MyLoginPage(
+                                title: 'Login',
+                              )),
                     );
                   },
                   child: Text("Requests"),
@@ -171,59 +207,55 @@ class _socialPageMainState extends State<socialPageMain> {
             ),
           ),
           Expanded(
-            child: allWorkouts.isNotEmpty
-                ? ListView.builder(
-                    itemCount: allWorkouts.length,
-                    itemBuilder: (context, index) {
-                      final workoutBox = allWorkouts[index];
-                      return Card(
-                        color: Colours.mainBoxSimple,
-                        elevation: 8,
-                        margin: EdgeInsets.all(16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Workout ${index + 1}',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height: 10),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: workoutBox.length,
-                                itemBuilder: (context, idx) {
-                                  final details = workoutBox[idx];
-                                  return Text(
-                                    'Exercise: ${details['exercise']}\nReps: ${details['reps']}, Weight: ${details['weight']}\n',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  );
-                                },
-                              ),
-                            ],
+            child: ListView.builder(
+              itemCount: allWorkouts.length,
+              itemBuilder: (context, index) {
+                final workoutList = allWorkouts[index];
+                // Displaying workouts of all shared workouts by user and their friends
+                return Card(
+                  margin: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical:
+                          10), // Padding from side and above and below other workouts
+                  color: Colours.mainBoxSimple,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Workout: ${workoutList.isNotEmpty ? workoutList[0]['usersEmailShared'] : 'User workout'}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
-                      );
-                    },
-                  )
-                : Center(
-                    child: Text(
-                      'No workouts to display',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                      textAlign: TextAlign.center,
-                    ),
+                      ),
+                      // Displaying exercises
+                      // ... is spread
+                      ...workoutList.map((exercise) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  'Exercise: ${exercise['exercise']}',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                Text(
+                                  'Reps: ${exercise['reps']}, Weight: ${exercise['weight']}',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          )),
+                      const SizedBox(height: 8),
+                    ],
                   ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -269,7 +301,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
               },
               child: Text('Add'),
             ),
-            if (_emailExists)
+            if (_emailExists) // Letting user know it was successful
               Text(
                 'Friend added',
                 style:
