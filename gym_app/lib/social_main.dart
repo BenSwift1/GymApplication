@@ -299,10 +299,10 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                   _emailExists = exists;
                 });
               },
-              child: Text('Add'),
+              child: const Text('Add'),
             ),
             if (_emailExists) // Letting user know it was successful
-              Text(
+              const Text(
                 'Friend added',
                 style:
                     TextStyle(color: const Color.fromARGB(255, 76, 116, 175)),
@@ -331,7 +331,6 @@ Future<bool> checkIfEmailExists(String email) async {
 
     return querySnapshot.docs.isNotEmpty;
   } catch (e) {
-    // Handle any errors
     print('Error checking email existence: $e');
     return false;
   }

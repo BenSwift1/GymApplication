@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:gym_app/main.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Firebase Auth Demo',
+      title: 'Login and register',
       home: FutureBuilder(
         future: _initialization,
         builder: (context, snapshot) {
@@ -60,7 +61,7 @@ class MyApp extends StatelessWidget {
 class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MyLoginPage(title: 'Firebase Auth Demo');
+    return MyLoginPage(title: 'Login');
   }
 }
 
@@ -76,11 +77,20 @@ class _MyLoginPageState extends State<MyLoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(
+          'Login & Register',
+          style: TextStyle(
+              color: const Color.fromARGB(255, 255, 255, 255),
+              fontFamily: 'futura'),
+        ),
+        backgroundColor: Colours.headSimple,
         actions: <Widget>[
           Builder(builder: (BuildContext context) {
             return TextButton(
-              child: const Text('Sign out'),
+              child: const Text(
+                'Sign out',
+                style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+              ),
               onPressed: () async {
                 User user;
                 if (_auth.currentUser != null) {
@@ -88,7 +98,8 @@ class _MyLoginPageState extends State<MyLoginPage> {
                   await _auth.signOut();
                   final String uid = user.uid;
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(uid + ' has successfully signed out.'),
+                    //content: Text(uid + ' has successfully signed out.'),
+                    content: const Text('User successfully signed out.'),
                   ));
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -105,7 +116,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
         return ListView(
           scrollDirection: Axis.vertical,
           padding: const EdgeInsets.all(16),
-          children: <Widget>[registerEmail(), _EmailPasswordForm()],
+          children: <Widget>[_EmailPasswordForm(), registerEmail()],
         );
       }),
     );
@@ -124,7 +135,7 @@ class registerEmailState extends State<registerEmail> {
   final TextEditingController _passwordController = TextEditingController();
 
   String _userEmail = "";
-  String _regMessage = "Hello";
+  String _regMessage = "";
 
   @override
   Widget build(BuildContext) {
@@ -133,50 +144,66 @@ class registerEmailState extends State<registerEmail> {
     } else {
       print("Firebase failed to intialise. Restart app.");
     }
-    return Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              validator: (String? value) {
-                if (value!.isEmpty) {
-                  return 'Enter your email...';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              validator: (String? value) {
-                if (value!.isEmpty) {
-                  return 'Enter your password...';
-                }
-                return null;
-              },
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              alignment: Alignment.center,
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _register();
-                    //storeEmailDB('bob');
-                  }
-                },
-                child: const Text('Submit'),
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: Text(_regMessage),
-            ),
-          ],
-        ));
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Register',
+            style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          ),
+          Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                    validator: (String? value) {
+                      if (value!.isEmpty) {
+                        return 'Enter your email...';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    validator: (String? value) {
+                      if (value!.isEmpty) {
+                        return 'Enter your password...';
+                      }
+                      return null;
+                    },
+                  ),
+                  Container(
+                    /*child: const Text(
+                'Register',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+              ),*/
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          _register();
+                          //storeEmailDB('bob');
+                        }
+                      },
+                      child: const Text(
+                        'Register',
+                        style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Text(_regMessage),
+                  ),
+                ],
+              ))
+        ]);
   }
 
   void _register() async {
@@ -239,16 +266,19 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            child: const Text('Test sign in with email and password'),
+            child: const Text(
+              'Sign In',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+            ),
             padding: const EdgeInsets.all(16),
-            alignment: Alignment.center,
+            //alignment: Alignment.center,
           ),
           TextFormField(
             controller: _emailController,
             decoration: const InputDecoration(labelText: 'Email'),
             validator: (String? value) {
               if (value!.isEmpty) {
-                return 'Please enter some text';
+                return 'Enter email...';
               }
               return null;
             },
@@ -258,7 +288,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
             decoration: const InputDecoration(labelText: 'Password'),
             validator: (String? value) {
               if (value!.isEmpty) {
-                return 'Please enter some text';
+                return 'Enter password...';
               }
               return null;
             },
@@ -272,13 +302,17 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
                   _signInWithEmailAndPassword();
                 }
               },
-              child: const Text('Submit'),
+              child: const Text(
+                'Log in',
+                style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+              ),
             ),
           ),
           Container(
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(_loginMessage, style: TextStyle(color: Colors.red)),
+            child: Text(_loginMessage,
+                style: TextStyle(color: Colours.mainBoxSimple)),
           ),
         ],
       ),
