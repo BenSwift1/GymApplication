@@ -9,10 +9,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:gym_app/user_settings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
   runApp(MyApp());
 }
 
@@ -151,10 +153,16 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   int workoutsCompleted = 0;
   late Timer periodicTimer;
+  late Map<String, Color> userPreferences;
 
   @override
   void initState() {
     super.initState();
+    Colours.changingColours().then((preferences) {
+      setState(() {
+        userPreferences = preferences; // Setting colours when screen loads
+      });
+    });
 
     workoutCounter(FirebaseAuth.instance.currentUser!.uid);
 
@@ -205,7 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // APP BAR
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colours.headSimple,
+        backgroundColor: userPreferences['head'] ?? Colours.headSimple,
         title: const Text('SWIFT',
             style: TextStyle(
               color: Colors.white,
@@ -213,11 +221,11 @@ class _MyHomePageState extends State<MyHomePage> {
               fontFamily: 'Futura',
             )),
       ),
-      backgroundColor: Colours.backgroundSimple,
+      backgroundColor:
+          userPreferences['background'] ?? Colours.backgroundSimple,
 
-      // BOTTOM NAV BAR
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colours.navSimple,
+        backgroundColor: userPreferences['nav'] ?? Colours.navSimple,
         elevation: 10,
         currentIndex: _currentIndex,
         onTap: (index) => _onBottomNavigationBarItemTapped(context, index),
@@ -255,7 +263,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       0.25, // Getting size of screen and then making box 25% of the height of the specific screen
                   width: MediaQuery.of(context).size.width * 0.85),
               child: Card(
-                color: Colours.mainBoxSimple,
+                color: userPreferences['otherBox'] ?? Colours.otherBoxSimple,
                 child: Text(
                   'Workouts completed:  $workoutsCompleted\n Reps completed: $totalReppMain\nSets completed: $totalSetsMain\nWeight lifted: \nConsec days: $weeksConsecutive',
                   style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
@@ -269,7 +277,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: MediaQuery.of(context).size.height * 0.40,
                   width: MediaQuery.of(context).size.width * 0.85),
               child: Card(
-                color: Colours.mainBoxSimple,
+                color: userPreferences['mainBox'] ?? Colours.mainBoxSimple,
                 child: displayingGraph(), // Displaying graph in box
               ),
             )
@@ -326,8 +334,54 @@ class Colours {
   static const Color otherBoxSimple = Color.fromRGBO(45, 200, 221, 1);
   static const Color navSimple = Color.fromRGBO(252, 203, 196, 1);
   static const Color backgroundSimple = Color.fromRGBO(248, 244, 229, 1);
+
+  // Fucntion to set colour scheme user selected
+  static Future<Map<String, Color>> changingColours() async {
+    try {
+      String? userId = FirebaseAuth.instance.currentUser?.uid;
+
+      if (userId != null) {
+        DocumentSnapshot userPreferences = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
+
+        // Getting colours from colour scheme field
+        if (userPreferences.exists && userPreferences['colourScheme'] != null) {
+          // Turning colours into int to then be written to database
+          Map<String, dynamic> colourScheme =
+              userPreferences['colourScheme'] as Map<String, dynamic>;
+          Color headColor = Color(colourScheme['head'] as int);
+          Color mainBoxColor = Color(colourScheme['mainBox'] as int);
+          Color otherBoxColor = Color(colourScheme['otherBox'] as int);
+          Color navColor = Color(colourScheme['nav'] as int);
+          Color backgroundColor = Color(colourScheme['background'] as int);
+
+          // Setting the colours
+          return {
+            'head': headColor,
+            'mainBox': mainBoxColor,
+            'otherBox': otherBoxColor,
+            'nav': navColor,
+            'background': backgroundColor,
+          };
+        }
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+    // Basic start colours when user hasnt chose theyre scheme yet
+    return {
+      'head': Color.fromARGB(255, 33, 58, 244),
+      'mainBox': const Color.fromARGB(255, 63, 144, 211),
+      'otherBox': const Color.fromARGB(255, 75, 180, 79),
+      'nav': Color.fromARGB(255, 112, 3, 3),
+      'background': const Color.fromARGB(255, 255, 255, 255),
+    };
+  }
 }
 
+// Tracks consecutive days user has exercised
 Future<int> consecDays(String userId) async {
   try {
     final completedWorkoutsSnapshot = await FirebaseFirestore.instance

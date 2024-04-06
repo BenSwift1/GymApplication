@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_app/login.dart';
 import 'package:gym_app/main.dart';
+import 'package:gym_app/user_settings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -196,9 +197,7 @@ class _socialPageMainState extends State<socialPageMain> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MyLoginPage(
-                                title: 'Login',
-                              )),
+                          builder: (context) => userSettingsPage()),
                     );
                   },
                   child: Text("Requests"),
