@@ -189,10 +189,24 @@ class _socialPageMainState extends State<socialPageMain> {
                       MaterialPageRoute(builder: (context) => AddFriendsPage()),
                     );
                   },
-                  child: Text("Add Friends"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 15), // Padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: const Text(
+                    "Add Friends",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 60, 60, 60),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
                 ElevatedButton(
-                  // Requests page (not yet implemented - currentnly log out page)
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -200,7 +214,22 @@ class _socialPageMainState extends State<socialPageMain> {
                           builder: (context) => userSettingsPage()),
                     );
                   },
-                  child: Text("Requests"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 15), // Padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: const Text(
+                    "Requests",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 60, 60, 60),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -243,7 +272,7 @@ class _socialPageMainState extends State<socialPageMain> {
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 Text(
-                                  'Reps: ${exercise['reps']}, Weight: ${exercise['weight']}',
+                                  'Reps: ${exercise['reps']}, Sets: ${exercise['sets']}, Weight: ${exercise['weight']}',
                                   style: const TextStyle(color: Colors.white),
                                 ),
                               ],

@@ -20,6 +20,7 @@ void main() async {
 
 int totalReppMain = 0;
 int totalSetsMain = 0;
+int totalWeightMain = 0;
 int weeksConsecutive = 0;
 List<String> practiceText = ['Test'];
 
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
 }
 
 // Creating a graph showing users reps over days
-class displayingGraph extends StatelessWidget {
+class displayingRepsGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -115,6 +116,7 @@ class displayingSetsGraph extends StatelessWidget {
                     : 0,
                 lineBarsData: [
                   LineChartBarData(
+                    // Mapping the spots on graph
                     spots: data
                         .map((entry) => FlSpot(entry.keys.first.day.toDouble(),
                             entry.values.first.toDouble()))
@@ -124,7 +126,6 @@ class displayingSetsGraph extends StatelessWidget {
                   ),
                 ],
                 titlesData: const FlTitlesData(
-                  show: true,
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
@@ -162,6 +163,9 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         userPreferences = preferences; // Setting colours when screen loads
       });
+      countingUserReps();
+      countingUserSets();
+      countingUserWeight();
     });
 
     workoutCounter(FirebaseAuth.instance.currentUser!.uid);
@@ -265,7 +269,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Card(
                 color: userPreferences['otherBox'] ?? Colours.otherBoxSimple,
                 child: Text(
-                  'Workouts completed:  $workoutsCompleted\n Reps completed: $totalReppMain\nSets completed: $totalSetsMain\nWeight lifted: \nConsec days: $weeksConsecutive',
+                  'Workouts completed:  $workoutsCompleted\n Reps completed: $totalReppMain\nSets completed: $totalSetsMain\nWeight lifted: $totalWeightMain \nConsecutive days exercised: $weeksConsecutive',
                   style: TextStyle(color: Colors.white, fontFamily: 'Futura'),
                 ),
               ),
@@ -278,7 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   width: MediaQuery.of(context).size.width * 0.85),
               child: Card(
                 color: userPreferences['mainBox'] ?? Colours.mainBoxSimple,
-                child: displayingGraph(), // Displaying graph in box
+                child: displayingSetsGraph(), // Displaying graph in box
               ),
             )
           ],
@@ -440,19 +444,19 @@ Future<List<Map<DateTime, int>>> countingUserReps() async {
       List<Map<DateTime, int>> data = [];
 
       // For every completed workout a user has, accessing the reps
-      completedWorkoutsSnapshot.docs.forEach((doc) {
+      for (var doc in completedWorkoutsSnapshot.docs) {
         final timestamp = (doc['timestamp'] as Timestamp).toDate();
         final exercises = doc['exercises'] as List<dynamic>;
         int totalReps = 0;
-        exercises.forEach((exercise) {
+        for (var exercise in exercises) {
           final reps = exercise['reps'] as String;
           totalReps += int.tryParse(reps) ?? 0;
           totalReppMain = totalReps;
-        });
+        }
         data.add({
           timestamp: totalReps
         }); // Getting timestamp of when reps were complted
-      });
+      }
 
       // Sorting data
       data.sort((a, b) => a.keys.first.compareTo(b.keys.first));
@@ -481,19 +485,19 @@ Future<List<Map<DateTime, int>>> countingUserSets() async {
       List<Map<DateTime, int>> data = [];
 
       // For every completed workout a user has, accessing the sets
-      completedWorkoutsSnapshot.docs.forEach((doc) {
+      for (var doc in completedWorkoutsSnapshot.docs) {
         final timestamp = (doc['timestamp'] as Timestamp).toDate();
         final exercises = doc['exercises'] as List<dynamic>;
         int totalSets = 0;
-        exercises.forEach((exercise) {
-          final reps = exercise['sets'] as String;
-          totalSets += int.tryParse(reps) ?? 0;
+        for (var exercise in exercises) {
+          final sets = exercise['sets'] as String;
+          totalSets += int.tryParse(sets) ?? 0;
           totalSetsMain = totalSets;
-        });
+        }
         data.add({
           timestamp: totalSets
         }); // Getting timestamp of when reps were complted
-      });
+      }
 
       // Sorting data
       data.sort((a, b) => a.keys.first.compareTo(b.keys.first));
@@ -502,6 +506,49 @@ Future<List<Map<DateTime, int>>> countingUserSets() async {
     }
   } catch (e) {
     print('Sets error $e');
+  }
+
+  return [];
+}
+
+Future<List<Map<DateTime, int>>> countingUserWeight() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userId = user.uid;
+
+      final completedWorkoutsSnapshot = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(userId)
+          .collection('completed_workouts')
+          .get();
+
+      List<Map<DateTime, int>> data = [];
+
+      // For every completed workout a user has, accessing the weight
+      for (var doc in completedWorkoutsSnapshot.docs) {
+        final timestamp = (doc['timestamp'] as Timestamp).toDate();
+        final exercises = doc['exercises'] as List<dynamic>;
+        int totalWeight = 0;
+        for (var exercise in exercises) {
+          final weight = exercise['weight'] as String;
+          totalWeight +=
+              int.tryParse(weight) ?? 0; // Adding weight to previous weight
+          totalWeightMain =
+              totalWeight; // Setting it as final weight to be displayed
+        }
+        data.add({
+          timestamp: totalWeight
+        }); // Getting timestamp of when reps were complted
+      }
+
+      // Sorting data
+      data.sort((a, b) => a.keys.first.compareTo(b.keys.first));
+
+      return data;
+    }
+  } catch (e) {
+    //print('Sets error $e');
   }
 
   return [];

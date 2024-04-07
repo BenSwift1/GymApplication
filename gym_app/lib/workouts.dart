@@ -20,7 +20,12 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     'Workout 2',
     'Workout 3',
     'Workout 4',
-    'Workout 5'
+    'Workout 5',
+    'Workout 6',
+    'Workout 7',
+    'Workout 8',
+    'Workout 9',
+    'Workout 10'
   ];
   List<List<Map<String, dynamic>>> allWorkouts = [];
 
@@ -156,7 +161,22 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                     context,
                     MaterialPageRoute(builder: (context) => CreateWorkouts()),
                   ),
-                  child: Text('Create workout'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 15), // Padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: const Text(
+                    'Create workout',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 60, 60, 60),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
               Padding(
@@ -168,7 +188,22 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                       builder: (context) => UnderwayWorkoutPage(),
                     ),
                   ),
-                  child: Text('Start workout'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 15), // Padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: const Text(
+                    'Start workout',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 60, 60, 60),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
               Padding(
@@ -180,7 +215,22 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                       builder: (context) => socialPageMain(),
                     ),
                   ),
-                  child: Text('Start workout'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 15), // Padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: const Text(
+                    'Delete workout',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 60, 60, 60),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -247,7 +297,23 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                     ),
                     ElevatedButton(
                       onPressed: shareWorkoutToFriends,
-                      child: Text("Share workout"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 255, 255),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 8), // Padding
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      child: const Text(
+                        "Share workout",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Color.fromARGB(255, 60, 60, 60),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     )
                   ],
                 ),

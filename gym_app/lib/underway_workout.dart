@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gym_app/main.dart';
 
 class Workout {
   String name1;
@@ -49,6 +50,7 @@ class _UnderwayWorkoutPageState extends State<UnderwayWorkoutPage> {
     }
   }
 
+  // Where user picks the workout they want to start. Then taken to tracking page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +69,7 @@ class _UnderwayWorkoutPageState extends State<UnderwayWorkoutPage> {
                   width: MediaQuery.of(context).size.width * 0.70),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: Colours.mainBoxSimple,
                     borderRadius: BorderRadius.circular(5.0)),
                 child: ListView.builder(
                   itemCount: workouts.length,
@@ -101,12 +103,14 @@ class TrackExercise extends StatefulWidget {
   final String exerciseName;
   final TextEditingController setsController;
   final TextEditingController repsController;
+  final TextEditingController weightController;
 
   TrackExercise({
     // Getting everything that needs to be stored in databse
     required this.exerciseName,
     required this.setsController,
     required this.repsController,
+    required this.weightController,
   });
 
   @override
@@ -152,6 +156,21 @@ class _TrackExerciseState extends State<TrackExercise> {
               ),
             ),
           ),
+          SizedBox(width: 10),
+          Container(
+              width: 70,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: TextField(
+                controller: widget.weightController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Weight',
+                ),
+              )),
         ],
       ),
     );
@@ -170,6 +189,7 @@ class ExercisingPage extends StatefulWidget {
 class _ExercisingPageState extends State<ExercisingPage> {
   List<TextEditingController> setsControllers = [];
   List<TextEditingController> repsControllers = [];
+  List<TextEditingController> weightControllers = [];
 
   @override
   void initState() {
@@ -178,6 +198,7 @@ class _ExercisingPageState extends State<ExercisingPage> {
     for (var _ in widget.exercises) {
       setsControllers.add(TextEditingController());
       repsControllers.add(TextEditingController());
+      weightControllers.add(TextEditingController());
     }
   }
 
@@ -187,6 +208,9 @@ class _ExercisingPageState extends State<ExercisingPage> {
       controller.dispose();
     }
     for (var controller in repsControllers) {
+      controller.dispose();
+    }
+    for (var controller in weightControllers) {
       controller.dispose();
     }
     super.dispose();
@@ -206,6 +230,7 @@ class _ExercisingPageState extends State<ExercisingPage> {
             'exercise': widget.exercises[i],
             'sets': setsControllers[i].text,
             'reps': repsControllers[i].text,
+            'weight': weightControllers[i].text,
           });
         }
 
@@ -247,6 +272,7 @@ class _ExercisingPageState extends State<ExercisingPage> {
                     exerciseName: widget.exercises[index],
                     setsController: setsControllers[index],
                     repsController: repsControllers[index],
+                    weightController: weightControllers[index],
                   );
                 },
               ),
